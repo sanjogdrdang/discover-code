@@ -1,0 +1,50 @@
+<style>
+#speedometer {
+    display: inline-block;
+    position: relative;
+  }
+  
+  #speedometer .barometer {
+    background-image: url("https://svgshare.com/i/GAZ.svg");
+    background-repeat: no-repeat;
+    width: 200px;
+    height: 110px;
+    display: inline-block;
+  }
+  
+  #speedometer .needle {
+    background-image: url("https://svgshare.com/i/GBP.svg");
+    background-repeat: no-repeat;
+   
+    width: 200px;
+    height: 110px;
+    display: inline-block;
+    left: 0px;
+    position: absolute;
+    bottom: 5px;
+    animation:
+    change 3s linear,
+      loop 1s linear 3s infinite alternate;
+    transform-origin:50% calc(100% - 8px) ;
+  }
+  @keyframes change {
+    0% {
+      transform:rotate(-90deg);
+    }
+    50% {
+      transform:rotate(70deg);
+    }
+    100% {
+      transform:rotate(50deg);
+    }
+  }
+  @keyframes loop {
+    0% {
+      transform:rotate(50deg);
+    }
+    100% {
+      transform:rotate(50deg);
+    }
+  }
+  
+  </style>

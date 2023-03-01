@@ -1,0 +1,421 @@
+
+  {% load static %}
+
+    <!-- NAVBAR -->
+    {% include 'navbar.html' %}
+    <!-- NAVBAR -->
+    <div class="container">
+    <div class="row">
+        <div class="col-md-6"  style="width: 1300px;" >
+            <div class="progress-outer" id="prog">
+                <div class="progress">
+                  {% if patient_subgoal == "Bone Pain" %}
+                  <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:50%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div>
+                {% elif patient_subgoal == "Hypertension" %}
+                <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:35%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div>
+                {% elif patient_healthgoal == "Ensure Well Being" %}
+                <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:70%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div>
+                {% elif patient_subgoal == "Sleep" %}
+                      <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:22%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div>
+                      {% elif patient_subgoal == "Mood" %}
+                      <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:50%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div>
+                
+                {% elif patient_healthgoal == "Weight" %}
+                    <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:100%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div>   
+                     
+                                     {% elif patient_subgoal == "Post Covid" %}
+                      <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:100%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div>   
+                {% elif patient_healthgoal == "Gut Improvement" %}
+                  <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:100%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div>
+                  
+                  {% elif patient_subgoal == "Hypertension and Diabetes" %}
+                      <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:60%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div>                                                                 
+                  {% elif patient_healthgoal == "Augment Quality of Sleep and Elevate Mood" %}
+                  <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:60%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div> 
+                  {% endif %}  
+                    
+                    <div class="progress-value"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    </head>
+
+
+    <style>
+      h2 {text-align: center;}
+      p {text-align: center;}
+      .text-center {
+    text-align: center;
+  }
+  
+#inv{
+  z-index: 10;
+    color: white;
+    font-size:15px;
+    
+
+}
+
+#inv:hover{
+
+  color:black !important;
+  background-color: rgb(251, 211, 217) !important;
+  border-color: red !important;
+  box-shadow: 0 0 10px red;
+}
+
+input:focus+label {
+    color:black !important;
+  background-color: rgb(251, 211, 217) !important;
+  border-color: red !important;
+  box-shadow: 0 0 10px red;
+}
+
+#inv1{
+
+  font-size:15px !important;
+
+
+
+}
+
+
+#inv1:hover{
+
+  color:black !important;
+  background-color: rgb(251, 211, 217) !important;
+  border-color: red !important;
+  box-shadow: 0 0 10px red;
+}
+
+#inv1,.btn-outline-danger{
+--bs-btn-active-bg:pink;
+}
+
+
+#inv4{
+  z-index: 10;
+    color: white;
+    font-size:15px;
+
+}
+
+#inv4:hover{
+
+  color:black !important;
+  background-color: rgb(251, 211, 217) !important;
+  border-color: red !important;
+  box-shadow: 0 0 10px red;
+}
+
+
+  
+  
+  .progress-outer{
+  
+      border-radius: 50px;
+      padding: 20px;
+      margin: 10px 0;
+      
+  }
+  .progress{
+      height: 27px;
+      margin: 0;
+      overflow: visible;
+      border-radius: 50px;
+      background: #eaedf3;
+      box-shadow: inset 0 10px  10px rgba(250, 244, 244, 0.9);
+  }
+  .progress .progress-bar{
+      border-radius: 50px;
+  }
+  .progress .progress-value{
+      position: relative;
+      left: -45px;
+      top: 4px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #fff;
+      letter-spacing: 2px;
+  }
+  .progress-bar.active{
+      animation: reverse progress-bar-stripes 0.40s linear infinite, animate-positive 2s;
+  }
+  @-webkit-keyframes animate-positive{
+      0% { width: 0%; }
+  }
+  @keyframes animate-positive {
+      0% { width: 0%; }
+  }
+  @media only screen and (max-width: 1000px) {
+    
+    .row {
+      display: flex;
+      flex-direction: column-reverse;
+      
+    }
+   
+    .box{
+      text-align: center;
+    }
+  
+    #img1 {
+    height: 350px;
+  }
+  
+  .mobile_device_320px {
+          display: none;
+      }
+      
+      
+            #prog{
+
+    position:relative;
+    left:-5px !important;
+    top: -20px;
+    width:100%;
+  
+  }
+
+#card{
+position:relative;
+top:-30px !important;
+}
+
+
+#img1{
+display:none !important;
+}
+
+#inv1{
+
+width:120px !important;
+font-size:12px !important;
+}
+
+#inv4{
+  width:120px !important;
+  height:50px !important;
+    font-size:12px;
+
+}
+
+
+      
+       }
+      
+      </style>
+
+<body>
+  <form action="question2" method="POST">
+    {% csrf_token %}
+  <!-- MAIN GRID STARTING -->
+  <div class="container my-4" id="card">
+    <div class="row">
+      <!-- LEFT GRID STARTING -->
+      <div class="col">
+          {% if patient_subgoal == "Bone Pain" %}
+          <div class=" text-center">
+          <h2>{{patient_question2}}</h2>
+          <div class="box"><br>
+            <button type="submit" name="option1" value="Either Side" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >Either Side</p></button>
+            <br>
+            <button type="submit" name="option2" value="Both Side" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >Both Side</p></button><br>
+
+            {% elif patient_subgoal == "Hypertension and Diabetes" %}
+          <div class=" text-center">
+          <h2>{{patient_question2}}</h2>
+          <div class="box"><br>
+            <button type="submit" name="option1" value="Less than 5 years" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >Less than 5 years</p></button>
+            <br>
+            <button type="submit" name="option2" value="5-10 years" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >5-10 years</p></button><br>
+            <button type="submit" name="option3" value="10-15 years" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >10-15 years</p></button><br>
+            <button type="submit" name="option4" value=" > 15 years" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p > >15 years</p></button><br>
+
+
+          {% elif patient_subgoal == "Post Covid" %}
+          <div class=" text-center">
+          <h2>{{patient_question2}}</h2>
+          <div class="box"><br>
+            <input type="checkbox" class="btn-check" name="optionn1"  value="cough" id="btn-check" autocomplete="off">
+            <label class="btn btn-outline-danger" style="height:80px;width:200px; color:black;box-shadow:black; " id="inv1"  for="btn-check">Cough</label>
+            <input type="checkbox" class="btn-check" name="optionn2" value="Fatigue which gets worse after mild physical activity" id="btn-check1" autocomplete="off">        
+            <label class="btn btn-outline-danger" style="height:80px;width:200px; color:black;box-shadow:black; " id="inv1" for="btn-check1">Fatigue which gets worse after mild physical activity</label><br><br>
+            <input type="checkbox" class="btn-check" name="optionn3" value="Fever on and off" id="btn-check2" autocomplete="off">
+            <label class="btn btn-outline-danger" style="height:80px;width:200px; color:black;box-shadow:black; " id="inv1"  for="btn-check2">Fever on and off</label>
+            <input type="checkbox" class="btn-check" name="optionn4" value="shortness of breath more often then pre COVID" id="btn-check3" autocomplete="off">        
+            <label class="btn btn-outline-danger" style="height:80px;width:200px; color:black;box-shadow:black; " id="inv1" for="btn-check3">Shortness of breath more often then pre COVID</label><br><br>
+            <input type="checkbox" class="btn-check" name="optionn5" value="muscle or joint pain" id="btn-check4" autocomplete="off">        
+            <label class="btn btn-outline-danger" style="height:80px;width:200px; color:black;box-shadow:black; " id="inv1" for="btn-check4">Muscle or joint pain</label>
+            <input type="checkbox" class="btn-check" name="optionn6" value="Difficulty in concentrating or anxiety or depression" id="btn-check5" autocomplete="off">        
+            <label class="btn btn-outline-danger" style="height:80px;width:200px; color:black;box-shadow:black; " id="inv1" for="btn-check5">Difficulty in concentrating or anxiety or depression</label><br><br>
+            <input type="checkbox" class="btn-check" name="optionn7" value="disturbed sleep" id="btn-check6" autocomplete="off">        
+            <label class="btn btn-outline-danger" style="height:80px;width:200px; color:black;box-shadow:black; " id="inv1" for="btn-check6">Disturbed sleep</label>
+            <input type="checkbox" class="btn-check" name="optionn8" value="loss of smell or taste" id="btn-check7" autocomplete="off">        
+            <label class="btn btn-outline-danger" style="height:80px;width:200px; color:black;box-shadow:black; " id="inv1" for="btn-check7">Loss of smell or taste</label><br><br>
+            <input type="checkbox" class="btn-check" name="optionn9" value="loss of smell or taste" id="btn-check8" autocomplete="off">        
+            <label class="btn btn-outline-danger" style="height:80px;width:200px; color:black;box-shadow:black; " id="inv1" for="btn-check8">Chest pain/ fast heart beat</label>            <input type="checkbox" class="btn-check" name="optionn10" value="Changes in menstrual cycle" id="btn-check9" autocomplete="off">        
+            <label class="btn btn-outline-danger" style="height:80px;width:200px; color:black;box-shadow:black; " id="inv1" for="btn-check9">None</label><br><br>
+           
+  
+              <button type="submit"  style="height:40px;width:280px" class="btn btn-dark" value="submit" name="submit" >Submit</button>
+           
+
+          {% elif patient_subgoal == "Sleep" %}
+          <div class=" text-center">
+          <h2>{{patient_question2}}</h2>
+          <div class="box"><br>
+            <button type="submit" name="option1" value="medication" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >Medication</p></button>
+            <br>
+            <button type="submit" name="option2" value="any other" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >Any other</p></button><br>
+            <button type="submit" name="option3" value="none" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >None</p></button><br>
+
+
+          {% elif patient_subgoal == "Mood" %}
+          <div class=" text-center">
+          <h2>{{patient_question2}}</h2>
+          <div class="box"><br>
+            <button type="submit" name="option1" value="Yes" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >Yes</p></button>
+            <br>
+            <button type="submit" name="option2" value="No" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >No</p></button><br>
+
+
+          {% elif patient_healthgoal == "Weight" %}
+          <div class=" text-center">
+          <h2>{{patient_question2}}</h2>
+           <p>You can choose multiple options</p>
+          <div class="box"><br>
+            <input type="checkbox" class="btn-check"  name="optionn1"  value="Diabetes" id="btn-check" autocomplete="off">
+          <label class="btn btn-outline-danger"  style="height:60px;width:200px; color:black;box-shadow:black; " id="inv1" for="btn-check">Diabetes</label>
+          
+          
+          <input type="checkbox" class="btn-check" name="optionn2" value="Hypertension" id="btn-check1" autocomplete="off">        
+          <label class="btn btn-outline-danger " style="height:60px;width:200px; color:black;  box-shadow:black;" id="inv1" for="btn-check1">Hypertension</label><br><br>
+          
+          <input type="checkbox" class="btn-check" name="optionn3" value="Heart Disease" id="btn-check2" autocomplete="off">
+          <label class="btn btn-outline-danger" style="height:60px;width:200px; color:black;  box-shadow:black;" id="inv1"  for="btn-check2">Heart Disease</label>
+          
+          <input type="checkbox" class="btn-check" name="optionn4" value="High Cholesterol" id="btn-check3" autocomplete="off">        
+          <label class="btn btn-outline-danger" style="height:60px;width:200px; color:black;  box-shadow:black;" id="inv1" for="btn-check3">High Cholesterol</label><br><br>
+          
+          <input type="checkbox" class="btn-check" name="optionn5" value="Kidney Disease" id="btn-check4" autocomplete="off">        
+          <label class="btn btn-outline-danger" style="height:60px;width:200px; color:black;  box-shadow:black;" id="inv1" for="btn-check4">Kidney Disease</label>
+          
+          <input type="checkbox" class="btn-check" name="optionn6" value="Asthma" id="btn-check5" autocomplete="off">        
+          <label class="btn btn-outline-danger" style="height:60px;width:200px; color:black;  box-shadow:black;" id="inv1" for="btn-check5">Asthma</label><br><br>
+          
+          <input type="checkbox" class="btn-check" name="optionn7" value="Bleeding Disorders" id="btn-check6" autocomplete="off">        
+          <label class="btn btn-outline-danger" style="height:60px;width:200px; color:black;  box-shadow:black;" id="inv1" for="btn-check6">Bleeding Disorders</label>
+          
+          <input type="checkbox" class="btn-check" name="optionn8" value="None" id="btn-check7" autocomplete="off">        
+          <label class="btn btn-outline-danger" style="height:60px;width:200px; color:black;  box-shadow:black;" id="inv1" for="btn-check7">None</label><br><br>
+          
+          <button type="submit" class="btn btn-dark" style="height:40px;width:230px" value="submit" name="submit" >Next</button><br><br>
+              {% elif patient_healthgoal == "Ensure Well Being" %}
+              <div class=" text-center">
+              <h2>{{patient_question2}}</h2>
+              <p>You can choose multiple options</p>
+              <div class="box"><br>
+          <input type="checkbox" class="btn-check"  name="optionn1"  value="Diabetes" id="btn-check" autocomplete="off">
+          <label class="btn btn-outline-danger"  style="height:60px;width:200px; color:black;box-shadow:black;padding:18px; " id="inv1" for="btn-check">Diabetes</label>
+          
+          
+          <input type="checkbox" class="btn-check" name="optionn2" value="Hypertension" id="btn-check1" autocomplete="off">        
+          <label class="btn btn-outline-danger " style="height:60px;width:200px; color:black;  box-shadow:black;padding:18px;" id="inv1" for="btn-check1">Hypertension</label><br><br>
+          
+          <input type="checkbox" class="btn-check" name="optionn3" value="Heart Disease" id="btn-check2" autocomplete="off">
+          <label class="btn btn-outline-danger" style="height:60px;width:200px; color:black;  box-shadow:black;padding:18px;" id="inv1"  for="btn-check2">Heart Disease</label>
+          
+          <input type="checkbox" class="btn-check" name="optionn4" value="High Cholesterol" id="btn-check3" autocomplete="off">        
+          <label class="btn btn-outline-danger" style="height:60px;width:200px; color:black;  box-shadow:black;padding:14px;" id="inv1" for="btn-check3">High Cholesterol</label><br><br>
+          
+          <input type="checkbox" class="btn-check" name="optionn5" value="Kidney Disease" id="btn-check4" autocomplete="off">        
+          <label class="btn btn-outline-danger" style="height:60px;width:200px; color:black;  box-shadow:black;padding:16px;" id="inv1" for="btn-check4">Kidney Disease</label>
+          
+          <input type="checkbox" class="btn-check" name="optionn6" value="Asthma" id="btn-check5" autocomplete="off">        
+          <label class="btn btn-outline-danger" style="height:60px;width:200px; color:black;  box-shadow:black;padding:18px;" id="inv1" for="btn-check5">Asthma</label><br><br>
+          
+          <input type="checkbox" class="btn-check" name="optionn7" value="Bleeding Disorders" id="btn-check6" autocomplete="off">        
+          <label class="btn btn-outline-danger" style="height:60px;width:200px; color:black;  box-shadow:black;padding:14px;" id="inv1" for="btn-check6">Bleeding Disorders</label>
+          
+          <input type="checkbox" class="btn-check" name="optionn8" value="None" id="btn-check7" autocomplete="off">        
+          <label class="btn btn-outline-danger" style="height:60px;width:200px; color:black;  box-shadow:black;padding:18px;" id="inv1" for="btn-check7">None</label><br><br>
+          
+          <button type="submit" class="btn btn-dark" style="height:40px;width:230px" value="submit" name="submit" >Next</button><br><br>
+          
+          
+                
+                  {% elif patient_healthgoal == "Gut Improvement" %}
+                  <div class="text-center">
+                  <h2>{{patient_question2}}</h2>
+                  <div class="box"><br>
+                    
+                  <a href="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/Profile1.jpg" style="height:60px;width:320px; color:black;  box-shadow:black; " id="inv4" class="btn btn-outline-danger">Profile 1 (Click to view)</a>
+                  <button type="submit" class="btn btn-outline-danger" value="Profile 1" name="option1" >Select</button>
+                  <br><br>
+                  
+                  <a href="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/Profile2.jpg" style="height:60px;width:320px; color:black;  box-shadow:black; " id="inv4" class="btn btn-outline-danger">Profile 2 (Click to view)</a>
+                  <button type="submit" class="btn btn-outline-danger" value="Profile 2" name="option1" >Select</button>
+                    <br><br>
+                    
+                  <a href="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/Profile3.jpg" style="height:60px;width:320px; color:black;  box-shadow:black; " id="inv4" class="btn btn-outline-danger">Profile 3 (Click to view)</a>
+                  <button type="submit" class="btn btn-outline-danger" value="Profile 3" name="option1" >Select</button>
+                    <br><br>
+                    
+                  <a href="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/Profile4.jpg" style="height:60px;width:320px; color:black;  box-shadow:black; " id="inv4" class="btn btn-outline-danger">Profile 4 (Click to view)</a>
+                  <button type="submit" class="btn btn-outline-danger" value="Profile 4" name="option1" >Select</button>
+                    <br><br>
+                    
+                  <a href="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/Profile5.jpg" style="height:60px;width:320px; color:black;  box-shadow:black; " id="inv4" class="btn btn-outline-danger">Profile 5 (Click to view)</a>
+                  <button type="submit" class="btn btn-outline-danger" value="Profile 5" name="option1" >Select</button>
+                    <br><br>
+   
+
+
+
+
+
+
+          {% endif %}
+          <br>
+    
+        </div>
+        </div>
+      <!-- LEFT GRID ENDING -->
+      </div>
+      <br>
+      <div class="col">
+        <!-- RIGHT GRID STARTING -->
+        <div class="carousel-item active">
+          {% if patient_healthgoal == "Specific Conditions" %}
+          <img src="{% static 'SpecificConditions.png' %}" id="img1" width=500 height=550 class="d-block w-100" alt="...">
+
+          {% elif patient_healthgoal == "Ensure Well Being" %}
+          <img src="{% static 'Overall_Well_Being.png' %}" id="img1" width=500 height=550 class="d-block w-100" alt="...">
+
+          {% elif patient_healthgoal == "Weight" %}
+          <img src="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/weight.png" id="img1" width=500 height=550 class="d-block w-100" alt="...">
+
+          {% elif patient_healthgoal == "Gut Improvement" %}
+          <img src="{% static 'Gut Improvement.png' %}" id="img1" width=500 height=550 class="d-block w-100" alt="...">
+
+          {% elif patient_healthgoal == "Augment Quality of Sleep and Elevate Mood" %}
+          <img src="{% static 'Skin and Hair.png' %}" id="img1" width=500 height=550 class="d-block w-100" alt="...">
+          
+          
+
+          {% else %}
+
+          
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <!-- RIGHT GRID ENDING -->
+    </div>
+ <!-- MAIN GRID ENDING -->
+ </form>
+ </body>
+

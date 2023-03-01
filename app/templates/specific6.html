@@ -1,0 +1,189 @@
+
+{% load static %}
+
+<!-- NAVBAR -->
+{% include 'navbar.html' %}
+<!-- NAVBAR -->
+</head>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6" style="width: 1300px;">
+            <div class="progress-outer" id="prog">
+                <div class="progress">
+                    {% if patient_subgoal == "Bone Pain" %}
+                    <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:100%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div>
+                  {% elif patient_subgoal == "Hypertension" %}
+                  <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:35%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div>
+                  {% elif patient_healthgoal == "Allergy and Intolerance" %}
+                    <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:100%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div>
+                    {% elif patient_subgoal == "Anemia" %}
+                    <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:100%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div>
+                    {% elif patient_subgoal == "Sleep" %}
+                      <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:88%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div>
+                  
+                  
+                  {% endif %}  
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<style>
+
+h2 {text-align: center;}
+p {text-align: center;}
+.text-center {
+text-align: center;
+}
+
+#inv{
+  z-index: 10;
+    color: white;
+    font-size:18px;
+
+}
+
+#inv:hover{
+
+  color:black !important;
+  background-color: rgb(251, 211, 217) !important;
+  border-color: red !important;
+    box-shadow: 0 0 10px red;
+}
+
+.progress-outer{
+
+border-radius: 50px;
+padding: 20px;
+margin: 10px 0;
+
+}
+.progress{
+height: 27px;
+margin: 0;
+overflow: visible;
+border-radius: 50px;
+background: #eaedf3;
+box-shadow: inset 0 10px  10px rgba(250, 244, 244, 0.9);
+}
+.progress .progress-bar{
+border-radius: 50px;
+}
+.progress .progress-value{
+position: relative;
+left: -45px;
+top: 4px;
+font-size: 14px;
+font-weight: bold;
+color: #fff;
+letter-spacing: 2px;
+}
+.progress-bar.active{
+animation: reverse progress-bar-stripes 0.40s linear infinite, animate-positive 2s;
+}
+@-webkit-keyframes animate-positive{
+0% { width: 0%; }
+}
+@keyframes animate-positive {
+0% { width: 0%; }
+}
+
+@media only screen and (max-width: 1000px) {
+      
+      .row {
+        display: flex;
+        flex-direction: column-reverse;
+        
+      }
+     
+      .box{
+        text-align: center;
+      }
+    
+      #img1 {
+      display:none !important;
+    }
+    
+    .mobile_device_320px {
+            display: none;
+        }
+        
+     #prog{
+    position:relative;
+    left:-5px !important;
+    top: -20px;
+    width:100%;
+  
+  }
+
+#card{
+position:relative;
+top:-60px !important;
+}
+        
+        
+         }
+
+
+</style>
+    
+
+        <body>
+        <form action="specific6" method="POST">
+        {% csrf_token %}
+        <!-- MAIN GRID STARTING -->
+        <div class="container my-2" id="card">
+        <div class="row">
+        <!-- LEFT GRID STARTING -->
+        <div class="col">
+        
+         {% if patient_healthgoal == "Augment Quality of Sleep and Elevate Mood" %}
+            <div class="text-center">
+            <h2>{{patient_specificquestion7}}</h2>
+            <div class="box"><br>
+                        
+            
+                            <button type="submit" name="option1" value="Never" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger btn-lg my-2"><p style="color:black">Never</p></button>
+            <br>
+            <button type="submit" name="option2" value="Rarely" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger btn-lg  my-2"><p style="color:black">Rarely</p></button><br>
+            <button type="submit" name="option3" value="Almost" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger btn-lg my-2"><p style="color:black">Almost</p></button><br>
+            <button type="submit" name="option4" value="Often" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger btn-lg my-2"><p style="color:black">Often</p></button><br>
+            <button type="submit" name="option5" value="Everyday" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger btn-lg my-2"><p style="color:black">Everyday</p></button><br>
+
+
+
+            {% endif %}
+               
+<br>
+
+</div>
+</div>
+<!-- LEFT GRID ENDING -->
+</div>
+<br>
+<div class="col">
+<!-- RIGHT GRID STARTING -->
+<div class="carousel-item active">
+    {% if patient_healthgoal == "Specific Conditions" %}
+    <img src="{% static 'SpecificConditions.png' %}" id="img1" width=500 height=550 class="d-block w-100" alt="...">
+    
+    {% elif patient_healthgoal == "Allergy and Intolerance" %}
+          <img src="{% static 'personaldetails1.png' %}" id="img1" style="position: sticky;" width=500 height=400 class="d-block w-100" alt="...">
+    
+    {% else %}
+
+    <img src="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/ciga.png" id="img1" width=500 height=450 class="d-block w-100" alt="...">
+    {% endif %}
+</div>
+</div>
+</div>
+<!-- RIGHT GRID ENDING -->
+</div>
+<!-- MAIN GRID ENDING -->
+</form>
+</body>

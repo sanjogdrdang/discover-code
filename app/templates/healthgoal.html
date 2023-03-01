@@ -1,0 +1,228 @@
+
+  {% load static %}
+ 
+    <!-- NAVBAR -->
+    {% include 'navbar.html' %}
+
+    <!-- NAVBAR -->
+            <!-- PROGRESS STARTING -->
+            <div class="container mx-14">
+                    <div class="row" style="text-align:center">
+<div class="col"><button type="button"  id="but" style="width:110px; height:50px;font-size:14px" class="btn btn-outline-danger"><strong>Your Goal</strong></button></div>
+<div class="col"><button type="button" id="but"  style="width:110px; height:50px; font-size:14px" class="btn btn-outline-danger"><strong>Body Stats</strong></button></div>
+<div class="col"><button type="button" id="but"  style="width:110px;height:50px; font-size:14px" class="btn btn-outline-danger"><strong>Diet</strong></button></div>
+<div class="col"><button type="button" id="but"   style="width:110px;height:50px; font-size:14px" class="btn btn-outline-danger"><strong>Lifestyle</strong></button></div>
+</div>
+         
+    
+              <div class="progress-outer" id="prog">
+                <div class="progress">
+      
+                  <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:18%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div>                  
+                  <div class="progress-value"> 15%</div>
+                </div>
+            </div>
+            <!-- PROGRESS ENDING -->
+
+
+<style>
+    h2 {text-align: center;}
+  p {text-align: center;}
+    .text-center {
+  text-align: center;
+}
+
+.alert{
+  padding: 10px;
+}
+
+
+
+#hg{
+  z-index: 10;
+    color: white;
+    font-size:16px;
+     color:black !important;
+    background-color: white !important;
+    border-color: black !important;
+   box-shadow: 0 0 10px white;
+  
+}
+
+#hg:hover{
+
+  color:black !important;
+  background-color: rgb(251, 211, 217) !important;
+  border-color: red !important;
+  box-shadow: 0 0 10px red;
+}
+
+
+
+.progress-outer{
+
+border-radius: 50px;
+padding: 20px;
+
+margin: 10px 0;
+padding-right: 20px;
+
+}
+.progress{
+height: 27px;
+width: 100%;
+margin: 0;
+overflow: visible;
+border-radius: 50px;
+background: #eaedf3;
+box-shadow: inset 0 10px  10px rgba(250, 244, 244, 0.9);
+}
+.progress .progress-bar{
+border-radius: 50px;
+}
+.progress .progress-value{
+position: relative;
+left: -45px;
+top: 4px;
+font-size: 14px;
+font-weight: bold;
+color: #fff;
+letter-spacing: 2px;
+}
+.progress-bar.active{
+animation: reverse progress-bar-stripes 0.40s linear infinite, animate-positive 2s;
+}
+@-webkit-keyframes animate-positive{
+0% { width: 0%; }
+}
+@keyframes animate-positive {
+0% { width: 0%; }
+}
+
+@media only screen and (max-width: 1000px) {
+  .row {
+    display: flex;
+    flex-direction: column-reverse;
+    
+  }
+  #x{
+    display: none;
+    
+  }
+  #img1{
+    display:none !important;
+  }
+  
+  #but{
+  display:none;  
+  }
+  
+  
+  #y{
+    height:50px;
+    text-align: center;
+    padding: 0%;
+    font-size:small;
+    width:80px;
+    position: relative;
+    left:4;
+  
+    
+  }
+  #q{
+    height:70px;
+    width:80px
+  }
+
+.mobile_device_320px {
+        display: none;
+    }
+
+
+  #hg{
+    height:80px  !important;
+    width:150px !important ;
+    font-size: 15px !important;
+  }
+  .col{
+    display: inline-block;
+  }
+  
+    #prog{
+
+    position:relative;
+    left:-5px !important;
+    top: -10px;
+    width:100%;
+
+  }
+  
+  #card{
+position:relative !important;
+top : -160px !important;
+
+}
+  
+
+
+
+
+  }
+</style>
+
+<body >
+    <form action="healthgoal" method="POST">
+      {% csrf_token %}
+    <!-- MAIN GRID STARTING -->
+    <div class="container my-1"id="cont">
+      <div class="row">
+        <!-- LEFT GRID STARTING -->
+        <div class="col" >
+          <div class="text-center" id="card">
+          <br>
+            <h2>What is your health goal?</h2>
+            <p> If you have multiple goals, select the most important one
+            <br><br>
+            <div class="box">
+  <button class="btn btn-outline-danger reducefontsize" name="hg"  id="hg" style="height:80px;width:220px; color:black;  box-shadow:black;"  type="submit" value="{{totalgoal.0}}" >{{totalgoal.0}}</button>&nbsp&nbsp
+  <button class="btn btn-outline-danger reducefontsize" name="hg1" id="hg"  style="height:80px;width:220px; color:black;  box-shadow:black;"  type="submit" value="{{totalgoal.1}}" >{{totalgoal.1}}</button><br><br>
+  
+  <button class="btn btn-outline-danger reducefontsize" name="hg2"  id="hg" style="height:80px;width:220px; color:black;  box-shadow:black;" type="submit" value="{{totalgoal.2}}" >{{totalgoal.2}}</button>&nbsp&nbsp
+  <button class="btn btn-outline-danger reducefontsize" name="hg3" id="hg"  style="height:80px;width:220px; color:black;  box-shadow:black;" type="submit" value="{{totalgoal.3}}" >{{totalgoal.3}}</button><br><br>
+  
+    <button class="btn btn-outline-danger reducefontsize" name="hg4"  id="hg" style="height:80px;width:220px; color:black;  box-shadow:black;" type="submit" value="{{totalgoal.4}}" >{{totalgoal.4}}</button>&nbsp&nbsp
+  <button class="btn btn-outline-danger reducefontsize" name="hg5" id="hg"  style="height:80px;width:220px; color:black;  box-shadow:black;"  type="submit" value="{{totalgoal.5}}" >{{totalgoal.5}}</button><br><br>
+  
+    <button class="btn btn-outline-danger reducefontsize" name="hg6"  id="hg" style="height:80px;width:220px; color:black;  box-shadow:black;" type="submit" value="{{totalgoal.6}}" >{{totalgoal.6}}</button>&nbsp&nbsp
+  <button class="btn btn-outline-danger reducefontsize" name="hg7" id="hg"  style="height:80px;width:220px; color:black;  box-shadow:black;" type="submit" value="{{totalgoal.7}}" >{{totalgoal.7}}</button><br><br>
+  
+    <button class="btn btn-outline-danger reducefontsize" name="hg8" id="hg"  style="height:80px;width:220px; color:black;  box-shadow:black;" type="submit" value="{{totalgoal.8}}" >{{totalgoal.8}}</button><br><br>
+
+  
+          </div>
+          </div>
+        <!-- LEFT GRID ENDING -->
+        </div>
+        
+        <div class="col">
+          <!-- RIGHT GRID STARTING -->
+          <div class="container my-4 pt-5 carousel-item active" ><br><br>
+          <img src="{% static 'problems.png' %}" id="img1" width=200 height=340 class="d-block w-100" alt="...">
+          </div>
+        </div>
+      </div>
+      <!-- RIGHT GRID ENDING -->
+      </div>
+   <!-- MAIN GRID ENDING -->
+   </form>
+   
+ 
+   
+  
+
+
+
+  </body>
+</html>
+
+  {% include "footer.html" %}
