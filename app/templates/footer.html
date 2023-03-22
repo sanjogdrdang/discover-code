@@ -1,4 +1,5 @@
-    <footer class="" style="margin-top:120px;background-color: rgb(75, 75, 75);">
+  
+    <footer class="footer" id="foot" style="margin-top:120px;background-color: rgb(75, 75, 75);">
       <br>
   <div class="container">
     <div class="d-flex justify-content-between">
@@ -26,19 +27,23 @@
           <a href="/"><img src="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/googlelogo.png" id=
           "logo"  style="position:relative;left:-217px;top:-11px;"  width="60" height="50" class="d-inline-block align-top" alt=""></a>
       <p class="text-muted">
-        <a href="#" id ="text" class="text-muted">Terms & Conditions</a>
-        <a href="#" id ="text1" class="text-muted">T&C</a>
+        <a href="https://www.drdangslab.com/TermsAndConditions.aspx"  target="_blank" id ="text" class="text-muted">Terms & Conditions</a>
+        <a href="https://www.drdangslab.com/TermsAndConditions.aspx" target="_blank"  id ="text1" class="text-muted">T&C</a>
       </p>
 
     </div>
   </div>
 </footer>
 
+
 <style>
 
 body{
 min-height: 100% !important;
 }
+
+
+
 
 .fab {
 
@@ -60,6 +65,9 @@ min-height: 100% !important;
 
 color: white !important;
 
+}
+#logo{
+display:none !important;
 }
 
 
@@ -98,7 +106,7 @@ display:none;
   color: white;
 }
 
-@media only screen and (max-width: 730px) {
+@media only screen and (max-width: 1000px) {
 
 #text1{
 color: white !important;
@@ -106,6 +114,11 @@ display:block !important;
 position: relative;
     right:-20px;
 }
+
+#logo{
+display:block !important;
+}
+  
 
 .justify-content-between {
     justify-content: center;

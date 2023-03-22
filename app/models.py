@@ -37,6 +37,10 @@ class Patient(models.Model):
     workout_answer=models.CharField(max_length=50, default="none")
     smoking_answer=models.CharField(max_length=50, default="none")
     drinking_answer=models.CharField(max_length=50, default="none")
+    history_question=models.CharField(max_length=200, default="none")
+    history_answer=models.CharField(max_length=1000, default="none")
+    historyfemale_question=models.CharField(max_length=200, default="none")
+    historyfemale_answer=models.CharField(max_length=500, default="none")
     subgoal=models.CharField(max_length=50,default="none")
     question1=models.CharField(max_length=100,default="none")
     answer1=models.CharField(max_length=200,default="none")
@@ -63,6 +67,14 @@ class Patient(models.Model):
     specificquestion10=models.CharField(max_length=100,default="non")
     specificanswer10=models.CharField(max_length=100,default="non")
     tests=models.CharField(max_length=1000,default="none")
+    testlink=models.CharField(max_length=1000,default="none")
+    buttons_clear=models.CharField(max_length=100,default="none")
+    healthgoal_clear=models.CharField(max_length=100,default="none")
+    tests_clear=models.CharField(max_length=100,default="none")
+    questions_clear=models.CharField(max_length=100,default="none")
+    rating=models.CharField(max_length=100,default="none")
+    comments=models.CharField(max_length=1000,default="none")
+    contacted=models.CharField(max_length=50,default="none")
 
     def __str__(self):
         return self.name
@@ -71,7 +83,7 @@ class Patient(models.Model):
 class Test(models.Model):
     test=models.CharField(max_length=50,default="")
     test_price=models.IntegerField(default=0)
-    test_description=models.CharField(max_length=500,default="non")
+    test_description=models.CharField(max_length=1000,default="non")
     test_reason=models.CharField(max_length=500,default="non")
     test_link=models.CharField(max_length=500,default="non")
 

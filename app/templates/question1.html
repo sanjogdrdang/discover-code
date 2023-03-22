@@ -1,15 +1,11 @@
 <!doctype html>
 <html lang="en">
 {% load static %}
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap demo</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+
     <!-- NAVBAR -->
     {% include 'navbar.html' %}
     <!-- NAVBAR -->
-    </head>
+  
 
     <div class="container">
       <div class="row">
@@ -40,11 +36,9 @@
                     {% elif patient_healthgoal == "Allergy and Intolerance" %}
                     <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:30%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div>
                     {% elif patient_healthgoal == "Skin and Hair" %}
-                    <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:100%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div>
+                    <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:50%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div>
                     {% elif patient_healthgoal == "Weight" %}
-                    <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:50%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div>  
-                    {% elif patient_healthgoal == "Fitness" %}
-                    <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:100%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div>       
+                    <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:50%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div>         
                     {% elif patient_healthgoal == "Gut Improvement" %}
                     <div class="progress-bar progress-bar-info progress-bar active bg-danger" style="width:100%; box-shadow:-1px 10px 10px rgba(225, 110, 110, 0.7);"></div> 
                     {% elif patient_healthgoal == "Sexual Well Being" %}
@@ -83,12 +77,35 @@
 }
 
 
+.typewriter h4 {
+  overflow: hidden; /* Ensures the text is not visible */
+  border-right: .15em solid orange; /* Creates the typewriter cursor */
+  white-space: nowrap; /* Prevents the text from wrapping */
+  margin: 0 auto; /* Centers the text */
+  letter-spacing: .15em; /* Adds some character spacing */
+  animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: orange }
+}
+
 
 
 #inv{
   z-index: 10;
     color: white;
     font-size:18px;
+         color:black !important;
+    background-color: white !important;
+    border-color: black !important;
+   box-shadow: 0 0 10px white;
     
 
 }
@@ -111,6 +128,8 @@
   z-index: 10;
     color: white;
     font-size:18px;
+        border-color: black !important;
+   box-shadow: 0 0 10px white;
 
 }
 
@@ -127,6 +146,10 @@
   z-index: 10;
     color: white;
     font-size:14px;
+             color:black !important;
+    background-color: white !important;
+    border-color: black !important;
+   box-shadow: 0 0 10px white;
 
 }
 
@@ -269,15 +292,9 @@ height:110px !important;
     <div class="row">
       <!-- LEFT GRID STARTING -->
       <div class="col">
-          {% if patient_subgoal == "Hair" %}
-          <div class=" text-center" >
-          <h2>{{patient_question1}}</h2>
-          <div class="box"><br>
-          <button type="submit" name="option1" value="Hairfall" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p style="color:black">Hairfall</p></button><br>
-          <button type="submit" name="option2" value="Premature Graying" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p style="color:black">Premature Graying</p></button><br>
-          <button type="submit" name="option3" value="Dandruff/Split Ends" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >Dandruff/Split Ends</p></button><br><br>
+          
 
-          {% elif patient_subgoal == "Skin" %}
+          {% if patient_healthgoal == "Skin and Hair" %}
           <div class=" text-center">
           <h2>{{patient_question1}}</h2>
           <div class="box"><br>
@@ -285,25 +302,26 @@ height:110px !important;
           <br>
           <button type="submit" name="option2" value="Eczema" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >Eczema</p></button><br>
           <button type="submit" name="option3" value="Hives or Uticaria" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >Hives or Uticaria</p></button><br>
-          <button type="submit" name="option2" value="Rashes" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >Rashes</p></button><br>
-          <button type="submit" name="option3" value="Vitiligo" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >Vitiligo</p></button><br>
+          <button type="submit" name="option4" value="Rashes" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >Rashes</p></button><br>
+          <button type="submit" name="option5" value="Vitiligo" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >Vitiligo</p></button><br>
+          <button type="submit" name="option6" value="None" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >None</p></button><br>
 
 
           {% elif patient_subgoal == "Respiratory" %}
           <div class=" text-center">
           <h2>{{patient_question1}}</h2>
           <div class="box"><br>
-          <button type="submit" name="option1" value="Cough" style="height:60px;width:200px; color:black;  box-shadow:black; font-size:16px;" id="inv2" class="btn btn-outline-danger my-1 reducefont"><p >Cough</p></button>
-          <button type="submit" name="option2" value="Wheezing" style="height:60px;width:200px; color:black;  box-shadow:black; font-size:16px;" id="inv2" class="btn btn-outline-danger my-1 reducefont"><p >Wheezing</p></button><br>
-          <button type="submit" name="option3" value="Shortness of breath" style="height:60px;width:200px; color:black;  box-shadow:black; font-size:16px;" id="inv2" class="btn btn-outline-danger my-1 reducefont"><p >Shortness of breath</p></button>
-          <button type="submit" name="option3" value="Chest tightness" style="height:60px;width:200px; color:black;  box-shadow:black; font-size:16px;" id="inv2" class="btn btn-outline-danger my-1 reducefont"><p >Chest tightness</p></button><br>
-          <button type="submit" name="option4" value="Sneezing" style="height:60px;width:200px; color:black;  box-shadow:black; font-size:16px;" id="inv2" class="btn btn-outline-danger my-1 reducefont"><p >Sneezing</p></button>
-          <button type="submit" name="option5" value="Runny Nose" style="height:60px;width:200px; color:black;  box-shadow:black; font-size:16px;" id="inv2" class="btn btn-outline-danger my-1 reducefont"><p >Runny Nose</p></button><br>
-          <button type="submit" name="option6" value="Itchy Nose" style="height:60px;width:200px; color:black;  box-shadow:black; font-size:16px;" id="inv2" class="btn btn-outline-danger my-1 reducefont"><p >Itchy Nose</p></button>
-          <button type="submit" name="option7" value="Nasal Congestion" style="height:60px;width:200px; color:black;  box-shadow:black; font-size:16px;" id="inv2" class="btn btn-outline-danger my-1 reducefont"><p >Nasal Congestion</p></button><br>
-          <button type="submit" name="option8" value="Itchy or Red or Watery Eyes" style="height:60px;width:200px; color:black;  box-shadow:black; font-size:16px;" id="inv2" class="btn btn-outline-danger my-1 reducefont"><p >Itchy or Red or Watery Eyes</p></button>
-          <button type="submit" name="option9" value="Post Nasal Drip" style="height:60px;width:200px; color:black;  box-shadow:black; font-size:16px;" id="inv2" class="btn btn-outline-danger my-1 reducefont"><p >Post Nasal Drip</p></button><br>
-          <button type="submit" name="option10" value="Recurrent Sinus Infection" style="height:60px;width:200px; color:black;  box-shadow:black; font-size:16px;" id="inv2" class="btn btn-outline-danger my-1 reducefont"><p >Recurrent Sinus Infection</p></button>
+          <button type="submit" name="option1" value="Cough" style="height:60px;width:200px; color:black;  box-shadow:black; font-size:16px;" id="inv2" class="btn btn-light my-1 reducefont"><p >Cough</p></button>
+          <button type="submit" name="option2" value="Wheezing" style="height:60px;width:200px; color:black;  box-shadow:black; font-size:16px;" id="inv2" class="btn btn-light my-1 reducefont"><p >Wheezing</p></button><br>
+          <button type="submit" name="option3" value="Shortness of breath" style="height:60px;width:200px; color:black;  box-shadow:black; font-size:16px;" id="inv2" class="btn btn-light my-1 reducefont"><p >Shortness of breath</p></button>
+          <button type="submit" name="option3" value="Chest tightness" style="height:60px;width:200px; color:black;  box-shadow:black; font-size:16px;" id="inv2" class="btn btn-light my-1 reducefont"><p >Chest tightness</p></button><br>
+          <button type="submit" name="option4" value="Sneezing" style="height:60px;width:200px; color:black;  box-shadow:black; font-size:16px;" id="inv2" class="btn btn-light my-1 reducefont"><p >Sneezing</p></button>
+          <button type="submit" name="option5" value="Runny Nose" style="height:60px;width:200px; color:black;  box-shadow:black; font-size:16px;" id="inv2" class="btn btn-light my-1 reducefont"><p >Runny Nose</p></button><br>
+          <button type="submit" name="option6" value="Itchy Nose" style="height:60px;width:200px; color:black;  box-shadow:black; font-size:16px;" id="inv2" class="btn btn-light my-1 reducefont"><p >Itchy Nose</p></button>
+          <button type="submit" name="option7" value="Nasal Congestion" style="height:60px;width:200px; color:black;  box-shadow:black; font-size:16px;" id="inv2" class="btn btn-light my-1 reducefont"><p >Nasal Congestion</p></button><br>
+          <button type="submit" name="option8" value="Itchy or Red or Watery Eyes" style="height:60px;width:200px; color:black;  box-shadow:black; font-size:16px;" id="inv2" class="btn btn-light my-1 reducefont"><p >Itchy or Red or Watery Eyes</p></button>
+          <button type="submit" name="option9" value="Post Nasal Drip" style="height:60px;width:200px; color:black;  box-shadow:black; font-size:16px;" id="inv2" class="btn btn-light my-1 reducefont"><p >Post Nasal Drip</p></button><br>
+          <button type="submit" name="option10" value="Recurrent Sinus Infection" style="height:60px;width:200px; color:black;  box-shadow:black; font-size:16px;" id="inv2" class="btn btn-light my-1 reducefont"><p >Recurrent Sinus Infection</p></button>
 
 
           {% elif patient_subgoal == "PCOS" %}
@@ -311,19 +329,19 @@ height:110px !important;
           <h2>{{patient_question1}}</h2>
           <div class="box"><br>
           <input type="checkbox" class="btn-check"  name="optionn1"  value="Irregular Periods" id="btn-check" autocomplete="off">
-          <label class="btn btn-outline-danger"  style="height:60px;width:320px; color:black;box-shadow:black; " id="inv1" for="btn-check">Irregular Periods</label><br><br>
+          <label class="btn btn-light"  style="height:60px;width:320px; color:black;box-shadow:black; " id="inv1" for="btn-check">Irregular Periods</label><br><br>
           <input type="checkbox" class="btn-check" name="optionn2" value="Acne" id="btn-check1" autocomplete="off">        
-          <label class="btn btn-outline-danger " style="height:60px;width:320px; color:black;  box-shadow:black;" id="inv1" for="btn-check1">Acne</label><br><br>
+          <label class="btn btn-light" style="height:60px;width:320px; color:black;  box-shadow:black;" id="inv1" for="btn-check1">Acne</label><br><br>
           <input type="checkbox" class="btn-check" name="optionn3" value="Extra hair growth on your face or body (hirsuitism)" id="btn-check2" autocomplete="off">
-          <label class="btn btn-outline-danger" style="height:60px;width:320px; color:black;  box-shadow:black;" id="inv1"  for="btn-check2">Extra hair growth on your face or body (hirsuitism)</label><br><br>
+          <label class="btn btn-light" style="height:60px;width:320px; color:black;  box-shadow:black;" id="inv1"  for="btn-check2">Extra hair growth on your face or body (hirsuitism)</label><br><br>
           <input type="checkbox" class="btn-check" name="optionn4" value="hair loss" id="btn-check3" autocomplete="off">        
-          <label class="btn btn-outline-danger" style="height:60px;width:320px; color:black;  box-shadow:black;" id="inv1" for="btn-check3">Hair Loss</label><br><br>
+          <label class="btn btn-light" style="height:60px;width:320px; color:black;  box-shadow:black;" id="inv1" for="btn-check3">Hair Loss</label><br><br>
           <input type="checkbox" class="btn-check" name="optionn5" value="weight gain" id="btn-check4" autocomplete="off">        
-          <label class="btn btn-outline-danger" style="height:60px;width:320px; color:black;  box-shadow:black;" id="inv1" for="btn-check4">Weight Gain</label><br><br>
+          <label class="btn btn-light" style="height:60px;width:320px; color:black;  box-shadow:black;" id="inv1" for="btn-check4">Weight Gain</label><br><br>
           <input type="checkbox" class="btn-check" name="optionn6" value="skin darkening (neck, groin, under the breasts)" id="btn-check5" autocomplete="off">        
-          <label class="btn btn-outline-danger" style="height:60px;width:320px; color:black;  box-shadow:black;" id="inv1" for="btn-check5">Skin Darkening (neck, groin, under the breasts)</label><br><br>
+          <label class="btn btn-light" style="height:60px;width:320px; color:black;  box-shadow:black;" id="inv1" for="btn-check5">Skin Darkening (neck, groin, under the breasts)</label><br><br>
           
-          <button type="submit" class="btn btn-dark" style="height:40px;width:230px" value="submit" name="submit" >Next</button><br><br>
+          <button type="submit" class="btn btn-dark" style="height:40px;width:230px;color:white;border-color:red;box-shadow: 0 0 10px red;" value="submit" name="submit" >Next</button><br><br>
 
 
           {% elif patient_subgoal == "Skin Allergy" %}
@@ -432,16 +450,7 @@ height:110px !important;
 
 
 
-          {% elif patient_healthgoal == "Fitness" %}
-          <div class=" text-center">
-          <h2>{{patient_question1}}</h2>
-          <div class="box"><br>
-          <button type="submit" name="option1" value="I feel tired all day" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >I feel tired all day</p></button>
-          <br>
-          <button type="submit" name="option2" value="I feel difficulty in getting out of the bed" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >I feel difficulty in getting out of the bed</p></button><br>
-          <button type="submit" name="option3" value="I feel sleepy in later half of the day" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >I feel sleepy in later half of the day</p></button>
-          <br>
-          <button type="submit" name="option4" value="I feel energrtic all day" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >I feel energrtic all day</p></button><br>
+          
 
 
           {% elif patient_healthgoal == "Gut Improvement" %}
@@ -489,6 +498,9 @@ height:110px !important;
             <button type="submit" name="option3" value="I feel sleepy in latter half of the day"  style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >I feel sleepy in latter half of the day</p></button>
             <br>
             <button type="submit" name="option4" value="I feel energetic all day" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >I feel energetic all day</p></button><br>
+            
+            <button type="submit" name="option5" value="None" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p >None</p></button><br>
+            
 
 
 
@@ -504,13 +516,13 @@ height:110px !important;
         <!-- RIGHT GRID STARTING -->
         <div class="carousel-item active">
           {% if patient_healthgoal == "Specific Conditions" %}
-          <img src="{% static 'SpecificConditions.png' %}" id="img1" width=500 height=550 class="d-block w-100" alt="...">
+          <img src="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/SpecificConditions.png" id="img1" width=500 height=550 class="d-block w-100" alt="...">
 
           {% elif patient_healthgoal == "Ensure Well Being" %}
           <img src="{% static 'Overall_Well_Being.png' %}" id="img1" width=500 height=550 class="d-block w-100" alt="...">
 
           {% elif patient_healthgoal == "Allergy and Intolerance" %}
-          <img src="{% static 'allergy.png' %}" id="img1" style="position: sticky;" width=500 height=450 class="d-block w-100" alt="...">
+          <img src="{% static 'personaldetails1.png' %}" id="img1" style="position: sticky;" width=500 height=450 class="d-block w-100" alt="...">
  
           {% elif patient_healthgoal == "Weight" %}
           <img src="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/weight.png" id="img1" width=500 height=550 class="d-block w-100" alt="...">
@@ -519,13 +531,13 @@ height:110px !important;
           <img src="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/weight.png" id="img1" width=500 height=550 class="d-block w-100" alt="...">
           
           {% elif patient_healthgoal == "Gut Improvement" %}
-          <img src="{% static 'Gut Improvement.png' %}" id="img1" width=500 height=550 class="d-block w-100" alt="...">
+          <img src="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/gutimprovement.png" id="img1" width=500 height=550 class="d-block w-100" alt="...">
 
           {% elif patient_healthgoal == "Skin and Hair" %}
           <img src="{% static 'Skin and Hair.png' %}" id="img1" width=500 height=550 class="d-block w-100" alt="...">
 
           {% elif patient_healthgoal == "Augment Quality of Sleep and Elevate Mood" %}
-          <img src="{% static 'Skin and Hair.png' %}" id="img1" width=500 height=550 class="d-block w-100" alt="...">
+          <img src="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/sleep_mood.png" id="img1" width=500 height=550 class="d-block w-100" alt="...">
 
           {% elif patient_healthgoal == "Sexual Well Being" %}
           <img src="{% static 'Sexual Well Being.png' %}" id="img1" width=500 height=550 class="d-block w-100" alt="...">
@@ -554,16 +566,19 @@ height:110px !important;
   <!-- Modal -->
   <div class="modal fade" id="exampleMod" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content"  data-tor="show(p):{rotateX.from(90) pull.down(half)} bounce perspective-self(4000px)">
+      <div class="modal-content" style="color:black;border-color:red;box-shadow: 0 0 15px red;" id="mod" data-tor="show(p):{rotateX.from(90) pull.down(half)} bounce perspective-self(4000px)">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Hey {{patient_name}}</h5>
+          <h5 class="modal-title" id="exampleModalLabel"><strong>Hey {{patient_name}} <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-emoji-heart-eyes" viewBox="0 0 16 16">
+  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+  <path d="M11.315 10.014a.5.5 0 0 1 .548.736A4.498 4.498 0 0 1 7.965 13a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .548-.736h.005l.017.005.067.015.252.055c.215.046.515.108.857.169.693.124 1.522.242 2.152.242.63 0 1.46-.118 2.152-.242a26.58 26.58 0 0 0 1.109-.224l.067-.015.017-.004.005-.002zM4.756 4.566c.763-1.424 4.02-.12.952 3.434-4.496-1.596-2.35-4.298-.952-3.434zm6.488 0c1.398-.864 3.544 1.838-.952 3.434-3.067-3.554.19-4.858.952-3.434z"/>
+</svg></strong></h5><hr>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <h4><strong>You are almost there!<br><br>
-          A few more questions to reach your personalized health package...</strong></h4>
+          <button class="btn btn-outline-dark"><div class="typewriter"><h4><strong>You are almost there!</h4></strong></div></button><br><br>
+        <h4><strong>A few more questions to reach your personalized health package...</h4></strong>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-danger" data-dismiss="modal">Continue</button>
@@ -584,6 +599,9 @@ height:110px !important;
 }
 
 </script>
+
+{% include "footer.html" %}
+
  </body>
 </html>
 

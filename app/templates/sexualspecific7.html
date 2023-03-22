@@ -1,15 +1,11 @@
 <!doctype html>
 <html lang="en">
 {% load static %}
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap demo</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+
     <!-- NAVBAR -->
     {% include 'navbar.html' %}
     <!-- NAVBAR -->
-    </head>
+ 
 
     <div class="container">
       <div class="row">
@@ -46,6 +42,10 @@
   z-index: 10;
     color: white;
     font-size:18px;
+             color:black !important;
+    background-color: white !important;
+    border-color: black !important;
+   box-shadow: 0 0 10px white;
 
 }
 
@@ -154,15 +154,18 @@ top:-60px !important;
           <div class="box" style="text-align: center;"><br>
             <button type="submit" name="Unusual itching or swelling of the genital area" value="Unusual itching or swelling of the genital area" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont text-align:center"><p style="color:black">Unusual itching or swelling of the genital area</p></button>
             <br>
-            {% if patient.gender == "Male" %}
+            {% if patient_gender == "Male" %}
             <button type="submit" name="Soreness or discharge from penis" value="Soreness or discharge from penis" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p style="color:black">Soreness or discharge from penis</p></button>
             {% else %}
             <button type="submit" name="Soreness or discharge from vagina" value="Soreness or discharge from vagina" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p style="color:black">Soreness or discharge from vagina</p></button>
             {% endif %}
             
             <button type="submit" name="Burning or itching sensation while urinating" value="Burning or itching sensation while urinating" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p style="color:black">Burning or itching sensation while urinating</p></button>
+            
             <button type="submit" name="Strong unusual genital odour" value="Strong unusual genital odour" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p style="color:black">Strong unusual genital odour</p></button>
+            
             <button type="submit" name="Any ulcers in genital area" value="Any ulcers in genital area" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p style="color:black">Any ulcers in genital area</p></button>  
+            
             <button type="submit" name="None" value="None" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p style="color:black">None</p></button>  
             
 
@@ -186,6 +189,7 @@ top:-60px !important;
     </div>
  <!-- MAIN GRID ENDING -->
  </form>
+ {% include "footer.html" %}
  </body>
 </html>
 

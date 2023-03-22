@@ -45,6 +45,10 @@ text-align: center;
   z-index: 10;
     color: white;
     font-size:18px;
+        color:black !important;
+    background-color: white !important;
+    border-color: black !important;
+   box-shadow: 0 0 10px white;
 
 }
 
@@ -170,10 +174,12 @@ top:-60px !important;
 <!-- RIGHT GRID STARTING -->
 <div class="carousel-item active">
     {% if patient_healthgoal == "Specific Conditions" %}
-    <img src="{% static 'SpecificConditions.png' %}" id="img1" width=500 height=550 class="d-block w-100" alt="...">
+    <img src="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/SpecificConditions.png" id="img1" width=500 height=550 class="d-block w-100" alt="...">
     
     {% elif patient_healthgoal == "Allergy and Intolerance" %}
           <img src="{% static 'personaldetails1.png' %}" id="img1" style="position: sticky;" width=500 height=400 class="d-block w-100" alt="...">
+    {% elif patient_healthgoal == "Augment Quality of Sleep and Elevate Mood" %}
+          <img src="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/sleep_mood.png" id="img1" width=500 height=550 class="d-block w-100" alt="...">
     
     {% else %}
 
@@ -186,4 +192,6 @@ top:-60px !important;
 </div>
 <!-- MAIN GRID ENDING -->
 </form>
+{% include "footer.html" %}
+
 </body>

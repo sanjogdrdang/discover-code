@@ -5,16 +5,9 @@ import json
 
 # sending the otp user mobile number
 def send_message(message, phone_number):
-    url = "https://www.fast2sms.com/dev/bulkV2"
+    url = f"https://www.fast2sms.com/dev/bulkV2?authorization=MPz6zj2TX7VmU4kU0ED9k7IztZusXadifXQZW03GKdSmokLdRmYN4PpW01MK&variables_values={message}&route=otp&numbers={phone_number}"
 
-    payload = f"message={message}&language=english&route=q&numbers={phone_number},"
-    headers = {
-        "authorization": settings.FAST_API_KEY,
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Cache-Control": "no-cache",
-    }
-
-    response = requests.request("POST", url, data=payload, headers=headers)
+    response = requests.request("GET", url)
     print(response.text)
 
     return json.loads(response.text).get("request_id")

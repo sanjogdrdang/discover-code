@@ -4,12 +4,43 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- NAVBAR ENDING -->
 <style>
-  footer{
-  margin-top:300px !important;
+  .footer{
+   position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  
   }
+  
+  h1{
+  color:black;
+  }
+  
+#logo{
+display:none !important;
+}
   
   #alert{
 margin-top: -23px;
+}
+
+@media only screen and (max-width: 1000px) {
+
+#logo{
+display:block !important;
+}
+  
+  
+   .footer{
+   position: static;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  margin-top:300px !important;
+  
+  }
+  
+
 }
 
 </style>
@@ -26,8 +57,8 @@ margin-top: -23px;
       {% endif %}
   <div class="container my-4">
     <br>
-    <h1> Hello!</h1>
-    <form action="gettingstarted" method="POST">
+    <h2 style="font-size:29px;"> Hello!</h2>
+    <form action="gettingstarted" method="POST" id="my-form">
       {% csrf_token %}
       <div class="mb-3">
         <label for="exampleInputname"  class="form-label">Name</label>
@@ -35,8 +66,7 @@ margin-top: -23px;
       </div>
       <label for="mobileNumber" class="form-label">Mobile Number</label>
       <div class="input-group mb-3">
-        <input type="text" class="form-control" id="mobileNumber" name="number" placeholder="Mobile Number" aria-label="Recipient's username" aria-describedby="button-addon2">
-        <button class="btn btn-dark" type="button" id="button-addon2" onclick="sendText()">Send OTP</button>
+        <input  class="form-control" id="mobileNumber" type="tel" maxlength=10 name="number" placeholder="Mobile Number"  aria-describedby="button-addon2">
       </div>
       <div id="emailHelp" name="number" class="form-text">We'll never share your number with anyone else.
       </div>
@@ -46,16 +76,15 @@ margin-top: -23px;
       </div>
       <div class="mb-3 form-check">
         <input type="checkbox" class="form-check-input" id="exampleCheck1">
-        <label class="form-check-label" for="exampleCheck1">I don't want to be contacted via email</label>
+        <label class="form-check-label" for="exampleCheck1">I don't want to be contacted via email or whatsapp</label>
       </div>
       <br>
-      <button class="btn btn-dark" style="height:43px;width:200px" type="submit">Next</button>
-      <br>
-      <br>
+      <button class="btn btn-dark" style="height:43px;width:200px;color:white;border-color:red;box-shadow: 0 0 10px red;" type="submit" onclick="sendText()" >Next</button>
+
     </form>
     <!-- Modal -->
     <div class="modal" id="otpmodel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
             <h1 class="modal-title fs-5" id="exampleModalLabel">Please enter the OTP sent to your mobile number</h1>
@@ -64,7 +93,7 @@ margin-top: -23px;
           <div class="modal-body">
             <div class="input-group mb-3">
               <input type="text" class="form-control" id="otpText"  placeholder="Enter OTP" aria-label="Recipient's username" aria-describedby="button-addon2">
-              <button class="btn btn-primary" type="button" id="button-addon2" onclick="validateOTP()">Verify</button>
+              <button class="btn btn-danger" type="button" id="button-addon2" onclick="validateOTP()">Verify</button>
             </div>
           </div>
         </div>
@@ -75,12 +104,21 @@ margin-top: -23px;
     let mobileNumber =document.getElementById('mobileNumber');
     let otpText =document.getElementById('otpText');
     var myModal = new bootstrap.Modal(document.getElementById('otpmodel'))
+
+    const myForm = document.getElementById('my-form');
+
+
+    myForm.addEventListener('submit', function(event) {
+
+	    event.preventDefault();
+});
     function sendText() {
     
       var inputText = mobileNumber.value; // Get the text from the input box
       var csrfToken = document.getElementsByName("csrfmiddlewaretoken")[0].value; // Get the Django CSRF token from the hidden input field
-      console.log(inputText)
-    
+   
+
+
       if (inputText.trim()) {
       // Send a POST request to the URL with the input text and CSRF token in the request body
       fetch("send_opt/", {
@@ -103,7 +141,9 @@ margin-top: -23px;
       var inputText = mobileNumber.value; // Get the text from the input box
       var otpTextval = otpText.value; // Get the text from the input box
       var csrfToken = document.getElementsByName("csrfmiddlewaretoken")[0].value; // Get the Django CSRF token from the hidden input field
-    
+   
+	console.log(inputText,otpTextval,csrfToken)
+
       if (inputText.trim() && otpTextval.trim()) {
       // Send a POST request to the URL with the input text and CSRF token in the request body
       fetch("validate_opt/", {
@@ -120,8 +160,9 @@ margin-top: -23px;
         if (data.status_code == 404) {
             alert("Please Try again");
         } else {
-          alert("Correct OPT");
         myModal.hide()
+	myForm.submit()
+		
         }
           
     });

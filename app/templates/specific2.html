@@ -48,6 +48,10 @@ text-align: center;
   z-index: 10;
     color: white;
     font-size:18px;
+        color:black !important;
+    background-color: white !important;
+    border-color: black !important;
+   box-shadow: 0 0 10px white;
 
 }
 
@@ -169,12 +173,12 @@ top:-60px !important;
             <div class="text-center">
             <h2>{{patient_specificquestion2}}</h2>
             <div class="box"><br>
-            <button type="submit" name="option1" value="you felt so good or so hyper that you got into trouble" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p style="color:black">you felt so good or so hyper that you got into trouble</p></button>
+            <button type="submit" name="option1" value="you felt so good or so hyper that you got into trouble" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p style="color:black; font-size:15px;">you felt so good or so hyper that you got into trouble</p></button>
             <br>
-            <button type="submit" name="option2" value="you were much more talkative or spoke faster than usual?" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p style="color:black">you were much more talkative or spoke faster than usual?</p></button><br>
-            <button type="submit" name="option1" value="you were so easily distracted by things around you that you had trouble concentrating" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p style="color:black">you were so easily distracted by things around you that you had trouble concentrating</p></button>
+            <button type="submit" name="option2" value="you were much more talkative or spoke faster than usual?" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p style="color:black;font-size:15px;">you were much more talkative or spoke faster than usual?</p></button><br>
+            <button type="submit" name="option1" value="you were so easily distracted by things around you that you had trouble concentrating" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p style="color:black;font-size:15px;">you were so easily distracted by things around you that you had trouble concentrating</p></button>
             <br>
-            <button type="submit" name="option2" value="you did things that were unusual for you and were risky?" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p style="color:black">you did things that were unusual for you and were risky?</p></button><br>    
+            <button type="submit" name="option2" value="you did things that were unusual for you and were risky?" style="height:80px;width:320px; color:black;  box-shadow:black;" id="inv" class="btn btn-outline-danger my-1 reducefont"><p style="color:black;font-size:15px;">you did things that were unusual for you and were risky?</p></button><br>    
 
 
 
@@ -234,10 +238,12 @@ top:-60px !important;
 <!-- RIGHT GRID STARTING -->
 <div class="carousel-item active">
     {% if patient_healthgoal == "Specific Conditions" %}
-    <img src="{% static 'SpecificConditions.png' %}" id="img1" width=500 height=550 class="d-block w-100" alt="...">
+    <img src="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/SpecificConditions.png" id="img1" width=500 height=550 class="d-block w-100" alt="...">
     
     {% elif patient_healthgoal == "Allergy and Intolerance" %}
           <img src="{% static 'personaldetails1.png' %}" id="img1" style="position: sticky;" width=500 height=400 class="d-block w-100" alt="...">
+    {% elif patient_healthgoal == "Augment Quality of Sleep and Elevate Mood" %}
+          <img src="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/sleep_mood.png" id="img1" width=500 height=550 class="d-block w-100" alt="...">
     
     {% else %}
 
@@ -250,6 +256,9 @@ top:-60px !important;
 </div>
 <!-- MAIN GRID ENDING -->
 </form>
+
+{% include "footer.html" %}
+
 </body>
 
 

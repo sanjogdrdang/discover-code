@@ -40,6 +40,8 @@ urlpatterns = [
     path("specific5", views.specific5, name="specific5"),
     path("specific6", views.specific6, name="specific6"),
     path("specific7", views.specific7, name="specific7"),
+    path("lifestyle", views.lifestyle, name="lifestyle"),
+    path("lifestylefemale", views.lifestylefemale, name="lifestylefemale"),
     path("navbar", views.navbar, name="navbar"),
 ]
 

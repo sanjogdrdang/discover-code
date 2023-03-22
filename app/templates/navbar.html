@@ -1,9 +1,11 @@
 <!doctype html>
 <html lang="en">
   <head>
+  {% load static %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no">
-    <title>Bootstrap demo</title>
+    <link rel="icon" sizes="100x100" href="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/Artboard%201%20(4).png" type="image/icon type">
+    <title>Discover</title>
     <link href='https://fonts.googleapis.com/css?family=Quicksand' rel='stylesheet'>
     <link href='https://fonts.googleapis.com/css?family=Quicksand' rel='stylesheet'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -13,7 +15,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" crossorigin="anonymous">
     <nav class="navbar navbar-dark navbar-expand-lg " >
       <div class="container-fluid">
-        <a href="/"><img src="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/DDL%20Logo.png" style="position:relative;top:-1px;"  width="60" height="50" class="d-inline-block align-top" alt=""></a>&nbsp
+        <a href="/"><img src="{% static 'DDL.png' %}"  style="position:relative;top:-1px;"  width="60" height="50" class="d-inline-block align-top" alt=""></a>
         <a class="navbar-brand" id="labname" href="/" ><strong><span style="color:white;">DR.DANGS LAB</span></strong></a>
         <a class="navbar-brand" id="sitename" href="/" ><strong><span style="color:white;">DISCOVER</span></strong></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,7 +27,7 @@
               <a class="nav-link active" aria-current="page" href="/"><span style="color:white;">Home</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="https://drdangslab.com/health-checkup-packages/"><span style="color: white;">Packages</span></a>
+              <a class="nav-link active" aria-current="page" target="_blank" href="https://drdangslab.com/health-checkup-packages/"><span style="color: white;">Packages</span></a>
             </li>
           </ul>
 
@@ -42,15 +44,15 @@
     <!-- Chat Model -->
     <div class="modal" id="exampleModal"  tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog fixed-bottom" style="margin-right:12px;padding-right: 3px; ">
-        <div class="modal-content">
+        <div class="modal-content" id="mod1">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel" style="font-weight:bold;" >Hi, How can I help you today?</h5>
+            <button class="btn btn-outline-dark"><h5 class="modal-title" id="exampleModalLabel" style="font-weight:bold;font-size:17px;" >Hi, How can I help you today?</h5></button>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body" style="text-align:unset !important">
             <ul class="list-group list-group-numbered">
               <li class="list-group-item" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal" data-bs-dismiss="modal">How does DISCOVER work?</li>
-              <a style="text-decoration:none;" href="https://drdangslab.com/health-checkup-packages/"><li class="list-group-item">2.Health Packages</li></a>
+              <a style="text-decoration:none;" target="_blank" href="https://drdangslab.com/health-checkup-packages/"><li class="list-group-item">2.Health Packages</li></a>
             </ul>
           </div>
           <hr>
@@ -58,9 +60,9 @@
             <div class="modal-footer" style="position:relative;float:left; border-top: 0 none;">
           
             
-              <a href="https://api.whatsapp.com/send?phone=919999992020" target="_blank" class="btn btn-lg btn-success" >
-              <i class="fab fa-whatsapp fa-lg" style="font-size:30px;border-left: 0.1em solid transparent; border-right: 0.7em solid transparent;"> </i></a>
-              <a href="tel:9999992020" class="btn btn-lg btn-light">
+              <a href="https://api.whatsapp.com/send?phone=919999992020" target="_blank" class="btn btn-lg btn-success" style="position:relative; float:right;" >
+              <i class="fab fa-whatsapp fa-lg" style="font-size:30px;border-left: 0.1em solid transparent; border-right: 0.7em solid transparent; position:relative;left:0;"> </i></a>
+              <a href="tel:9999992020"  class="btn btn-lg btn-light">
               <i class="fas fa-phone-alt fa-lg""></i></a>
               <a href="mailto:info@drdangslab.com"  target="_blank" class="btn btn-lg btn-primary">
               <i class="fas fa-envelope fa-lg"></i>
@@ -73,23 +75,26 @@
     </div>
     <div class="modal fade" id="exampleModalToggle2" aria-hidden="true" aria-labelledby="exampleModalToggleLabel2" tabindex="-1" >
       <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+        <div class="modal-content" style="color:black;border-color:red;box-shadow: 0 0 15px red;" id="mod">
           <div class="modal-header">
             <h5 class="modal-title" style="text-align:center;"  id="exampleModalToggleLabel2" style="font-weight:bold;">
-            DISCOVER-How does it work?</h5>
+            <strong>DISCOVER-How does it work <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16">
+  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+  <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+</svg></strong></h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <button class="btn btn-light" style="font-size:20px;height:45px;text-align:center;"><p><i>" Our purpose is to fuel yours " </i></p></button><br><br>
-            <h4><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+            <button class="btn btn-outline-dark" style="font-size:20px;height:45px;text-align:center;"><p><i>" Our purpose is to fuel yours " </i></p></button><br><br>
+            <h4><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" style="color:green" class="bi bi-pencil-fill" viewBox="0 0 16 16">
   <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
 </svg> &nbsp Take a quiz</h4>
             <br>
-            <h4><strong><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-slash-minus" viewBox="0 0 16 16">
+            <h4><strong><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" style="color:red" fill="currentColor" class="bi bi-plus-slash-minus" viewBox="0 0 16 16">
   <path d="m1.854 14.854 13-13a.5.5 0 0 0-.708-.708l-13 13a.5.5 0 0 0 .708.708ZM4 1a.5.5 0 0 1 .5.5v2h2a.5.5 0 0 1 0 1h-2v2a.5.5 0 0 1-1 0v-2h-2a.5.5 0 0 1 0-1h2v-2A.5.5 0 0 1 4 1Zm5 11a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5A.5.5 0 0 1 9 12Z"/>
 </svg></strong> &nbsp Understand and edit your personalized test packages</h4>
             <br>
-            <h4><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-medical-fill" viewBox="0 0 16 16">
+            <h4><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"style="color:blue" class="bi bi-file-earmark-medical-fill" viewBox="0 0 16 16">
   <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zm-3 2v.634l.549-.317a.5.5 0 1 1 .5.866L7 7l.549.317a.5.5 0 1 1-.5.866L6.5 7.866V8.5a.5.5 0 0 1-1 0v-.634l-.549.317a.5.5 0 1 1-.5-.866L5 7l-.549-.317a.5.5 0 0 1 .5-.866l.549.317V5.5a.5.5 0 1 1 1 0zm-2 4.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1zm0 2h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1z"/>
 </svg> &nbsp Book a test & avail a report walk through from our health expert.</h4>
           </div>
@@ -112,6 +117,18 @@
   display:none;
   }
   
+  #log{
+    color:black !important;
+  background-color: rgb(75, 75, 75) !important;
+  border-color: red !important;
+  box-shadow: 0 0 10px red;
+  background: grey important;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  
+  }
+  
   #heart{
   color:black !important;
   background-color: rgb(75, 75, 75) !important;
@@ -131,28 +148,26 @@
   border-color: red !important;
   box-shadow: 0 0 10px red;
 }
-.modal-content {
-   background-color: rgb(75, 75, 75);
-   color:white;
+#mod {
+  
+   color:black;
+
+  text-align:center;
+  font-weight:bold;
 }
 
 .list-group-item {
-background-color:rgb(75, 75, 75);
-color:white;
+
+color:black;
 
 }
 
-{
-    width: 0px;
-    border-radius: 10px;
-    border-left: -1.5em solid transparent !important;
-    border-right: 0.7em solid transparent;
+#mod1{
+color:black;
+
 }
 
-.modal-title{
 
-text-align:center;
-}
 
 
   
@@ -166,8 +181,8 @@ text-align:center;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 20px;
-  height: 20px;
+  width: 63px !important;
+  height: 63px !important;
   border-radius: 25px;
   z-index: 2;
   text-decoration: none;
@@ -177,7 +192,8 @@ text-align:center;
   color: white;
   }
   body{
-  background-image:url("https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/SAMPLE%202%20(1).png");
+  background-image:url("https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/9.jpg");
+  color:white;
   height: 100% !important;
   width: 100%;
   /* Center and scale the image nicely */
@@ -211,7 +227,7 @@ text-align:center;
   
   body{
   
-    background-image:url("https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/7.jpg");
+    background-image:url("https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/9.jpg");
   height: 100% !important;
   width: 100%;
   /* Center and scale the image nicely */
