@@ -1,21 +1,23 @@
 from django.shortcuts import render
-from .models import Bmi, Contactus, Patient, Test, HealthGoal, Option,OtpMobile
+from .models import Bmi, Contactus, Patient, Test, HealthGoal, Option, OtpMobile
 from django.shortcuts import redirect
 import datetime
 from django.http import JsonResponse
 import json
-from .utils import send_message
+from .utils import send_message,opt_in_gapshup,encoder_of_url
 from django.contrib import messages
- 
+
 import random
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+
+
 # HOME
 def home(request):
     return render(request, "home.html")
 
-def get_otp():
 
+def get_otp():
     # Define the range of the OTP
     otp_range = range(100000, 999999)
 
@@ -23,15 +25,21 @@ def get_otp():
     otp = random.sample(otp_range, 1)[0]
 
     return otp
+
+
 # GETTING STARTED
 def gettingstarted(request):
     if request.method == "POST":
         name = request.POST["name"]
         number = request.POST["number"]
-        otp_valid_number=OtpMobile.objects.filter(phone_number=number,verified=True)
+        updates = request.POST.get("updates",False)
+        otp_valid_number = OtpMobile.objects.filter(phone_number=number, verified=True)
         if otp_valid_number.exists():
             email = request.POST["email"]
             patient = Patient(name=name, number=number, email=email)
+            if not(updates):
+                patient.contacted=True
+                print(opt_in_gapshup(number))
             patient.save()
             pk = patient.patient_id
             request.session["pk_id"] = pk
@@ -42,21 +50,22 @@ def gettingstarted(request):
     return render(request, "gettingstarted.html")
 
 
-
 def send_opt(request):
     if request.method == "POST":
         jsonData = json.loads(request.body)
         phone_number = jsonData.get("inputText")
         print("sending the api phone numb rt")
-        genrated_otp=get_otp()
-        send_message("OTP is "+str(genrated_otp),phone_number)
-        otp_qs=OtpMobile.objects.filter(phone_number=phone_number)
+        genrated_otp = get_otp()
+        send_message("OTP is " + str(genrated_otp), phone_number)
+        otp_qs = OtpMobile.objects.filter(phone_number=phone_number)
         if otp_qs.exists():
-            otp_obj=otp_qs[0]
-            otp_obj.otp=genrated_otp
+            otp_obj = otp_qs[0]
+            otp_obj.otp = genrated_otp
 
         else:
-            otp_obj=OtpMobile.objects.create(phone_number=phone_number,otp=genrated_otp)
+            otp_obj = OtpMobile.objects.create(
+                phone_number=phone_number, otp=genrated_otp
+            )
         otp_obj.save()
 
         # Process the input text and generate a response
@@ -64,7 +73,9 @@ def send_opt(request):
         return JsonResponse(response_data)
     else:
         # Handle other HTTP methods (e.g., GET)
-        return JsonResponse({"error": "This view only accepts POST requests."},status=404)
+        return JsonResponse(
+            {"error": "This view only accepts POST requests."}, status=404
+        )
 
 
 def validate_opt(request):
@@ -73,18 +84,17 @@ def validate_opt(request):
         phone_number = jsonData.get("inputText")
         otp_text = jsonData.get("otpText")
 
-        otp_valid=OtpMobile.objects.filter(phone_number=phone_number,otp=otp_text)
-        if otp_text=="111":
-            otp_obj=OtpMobile.objects.get(phone_number=phone_number)
-            otp_obj.verified=True
+        otp_valid = OtpMobile.objects.filter(phone_number=phone_number, otp=otp_text)
+        if otp_text == "111":
+            otp_obj = OtpMobile.objects.get(phone_number=phone_number)
+            otp_obj.verified = True
             otp_obj.save()
-            return JsonResponse({"valid":True})
+            return JsonResponse({"valid": True})
 
+        elif otp_valid.exists():
+            otp_obj = otp_valid[0]
 
-        elif otp_valid.exists() :
-            otp_obj=otp_valid[0]
-
-            otp_obj.verified=True
+            otp_obj.verified = True
             otp_obj.save()
             print("valid opt")
             # send_message("OTP is 9823489",phone_number)
@@ -92,11 +102,14 @@ def validate_opt(request):
             response_data = {"result": "The input text was: " + phone_number}
             return JsonResponse(response_data)
 
-
         else:
             print("invalid otp ")
             # Handle other HTTP methods (e.g., GET)
-            return JsonResponse({'status_code': 404,"error": "This view only accepts POST requests."},status=400)
+            return JsonResponse(
+                {"status_code": 404, "error": "This view only accepts POST requests."},
+                status=400,
+            )
+
 
 # HEALTHGOAL
 def healthgoal(request):
@@ -218,9 +231,9 @@ def general1(request):
         patient.save()
         return redirect("general2")
     pk_id = request.session.get("pk_id")
-    patient = Patient.objects.get(patient_id=pk_id)    
+    patient = Patient.objects.get(patient_id=pk_id)
 
-    return render(request, "general1.html",{"patient_subgoal":patient.subgoal})
+    return render(request, "general1.html", {"patient_subgoal": patient.subgoal})
 
 
 # GENERAL PAGE 2
@@ -233,7 +246,7 @@ def general2(request):
         print(type(height))
 
         if "." in height:
-            if float(height)<10:
+            if float(height) < 10:
                 print("fef")
                 x = height.split(".")
                 feet = x[0]
@@ -241,14 +254,13 @@ def general2(request):
                 inches = x[1]
                 inches_int = int(inches)
                 height = (feet_int * 30.48) + (inches_int * 2.54)
-            elif float(height)>10:
-                height=float(height)
-                height=int(height)
+            elif float(height) > 10:
+                height = float(height)
+                height = int(height)
         elif int(height) <= 10:
             height = int(height) * 30.48
         else:
-            height=int(height)
-            
+            height = int(height)
 
         if "optionn3" in request.POST:
             w = request.POST["optionn3"]
@@ -325,7 +337,7 @@ def personaldetails1(request):
         patient.diet_answer = dietans
         patient.save()
         return redirect("personaldetails2")
-        
+
     elif "gluten" in request.POST:
         dietans = request.POST["gluten"]
         pk_id = request.session.get("pk_id")
@@ -395,12 +407,12 @@ def personaldetails2(request):
             return redirect("lifestylefemale")
         else:
             return redirect("lifestyle")
-        
-    
 
     return render(request, "personaldetails2.html")
-    
-#LIFESTYLE(HISTORY)
+
+
+# LIFESTYLE(HISTORY)
+
 
 def lifestyle(request):
     list3 = []
@@ -414,7 +426,6 @@ def lifestyle(request):
         patient.history_answer = list4
         patient.save()
 
-
     if "optionn2" in request.POST:
         optione = request.POST["optionn2"]
         list3.append(optione)
@@ -424,7 +435,7 @@ def lifestyle(request):
         patient = Patient.objects.get(patient_id=pk_id)
         patient.history_answer = list4
         patient.save()
-    
+
     if "optionn3" in request.POST:
         optione = request.POST["optionn3"]
         list3.append(optione)
@@ -434,7 +445,7 @@ def lifestyle(request):
         patient = Patient.objects.get(patient_id=pk_id)
         patient.history_answer = list4
         patient.save()
-    
+
     if "optionn4" in request.POST:
         optione = request.POST["optionn4"]
         list3.append(optione)
@@ -444,7 +455,7 @@ def lifestyle(request):
         patient = Patient.objects.get(patient_id=pk_id)
         patient.history_answer = list4
         patient.save()
-    
+
     if "optionn5" in request.POST:
         optione = request.POST["optionn5"]
         list3.append(optione)
@@ -454,7 +465,7 @@ def lifestyle(request):
         patient = Patient.objects.get(patient_id=pk_id)
         patient.history_answer = list4
         patient.save()
-    
+
     if "optionn6" in request.POST:
         optione = request.POST["optionn6"]
         list3.append(optione)
@@ -464,7 +475,7 @@ def lifestyle(request):
         patient = Patient.objects.get(patient_id=pk_id)
         patient.history_answer = list4
         patient.save()
-    
+
     if "optionn7" in request.POST:
         optione = request.POST["optionn7"]
         list3.append(optione)
@@ -474,7 +485,7 @@ def lifestyle(request):
         patient = Patient.objects.get(patient_id=pk_id)
         patient.history_answer = list4
         patient.save()
-    
+
     if "optionn8" in request.POST:
         optione = request.POST["optionn8"]
         list3.append(optione)
@@ -484,7 +495,7 @@ def lifestyle(request):
         patient = Patient.objects.get(patient_id=pk_id)
         patient.history_answer = list4
         patient.save()
-    
+
     if "optionn9" in request.POST:
         optione = request.POST["optionn9"]
         list3.append(optione)
@@ -494,7 +505,7 @@ def lifestyle(request):
         patient = Patient.objects.get(patient_id=pk_id)
         patient.history_answer = list4
         patient.save()
-    
+
     if "optionn10" in request.POST:
         optione = request.POST["optionn10"]
         list3.append(optione)
@@ -504,23 +515,28 @@ def lifestyle(request):
         patient = Patient.objects.get(patient_id=pk_id)
         patient.history_answer = list4
         patient.save()
-        
+
     if "submit" in request.POST:
-            return redirect("lifestyle1")
-   
-            
+        return redirect("lifestyle1")
+
     pk_id = request.session.get("pk_id")
     patient = Patient.objects.get(patient_id=pk_id)
-    patient.history_question="Do you or a blood relation have any of the following conditions/complaints?"
+    patient.history_question = (
+        "Do you or a blood relation have any of the following conditions/complaints?"
+    )
     patient.save()
 
-    return render(request, "lifestyle.html",{"patient_history":patient.history_question,"patient_gender":patient.gender})
-    
-    
-#LIFESTYLEFEMALE
+    return render(
+        request,
+        "lifestyle.html",
+        {"patient_history": patient.history_question, "patient_gender": patient.gender},
+    )
+
+
+# LIFESTYLEFEMALE
+
 
 def lifestylefemale(request):
-    
     if "My periods haven't started yet" in request.POST:
         specificanswer3 = request.POST["My periods haven't started yet"]
         pk_id = request.session.get("pk_id")
@@ -535,7 +551,7 @@ def lifestylefemale(request):
         patient.historyfemale_answer = specificanswer3
         patient.save()
         return redirect("lifestyle")
-        
+
     elif "I have menstrual cramps during periods" in request.POST:
         specificanswer3 = request.POST["I have menstrual cramps during periods"]
         pk_id = request.session.get("pk_id")
@@ -585,9 +601,15 @@ def lifestylefemale(request):
 
     pk_id = request.session.get("pk_id")
     patient = Patient.objects.get(patient_id=pk_id)
-    patient.historyfemale_question="At present, which statement best describes your menstrual cycle"
+    patient.historyfemale_question = (
+        "At present, which statement best describes your menstrual cycle"
+    )
     patient.save()
-    return render(request,"lifestylefemale.html",{"patient_historyfemale":patient.historyfemale_question})
+    return render(
+        request,
+        "lifestylefemale.html",
+        {"patient_historyfemale": patient.historyfemale_question},
+    )
 
 
 # LIFESTYLE1
@@ -643,13 +665,13 @@ def lifestyle2(request):
         patient = Patient.objects.get(patient_id=pk_id)
         patient.drinking_answer = drinkans
         patient.save()
-        if (patient.healthgoal == "Weight"
+        if (
+            patient.healthgoal == "Weight"
             or patient.healthgoal == "Gut Improvement"
             or patient.healthgoal == "Specific Conditions"
             or patient.healthgoal == "Ensure Well Being"
             or patient.healthgoal == "Sexual Well Being"
             or patient.healthgoal == "Skin and Hair"
-            
         ):
             return redirect("question1")
         return redirect("subgoal")
@@ -660,13 +682,13 @@ def lifestyle2(request):
         patient.drinking_answer = drinkans
         patient.save()
 
-        if (patient.healthgoal == "Weight"
+        if (
+            patient.healthgoal == "Weight"
             or patient.healthgoal == "Gut Improvement"
             or patient.healthgoal == "Specific Conditions"
             or patient.healthgoal == "Ensure Well Being"
             or patient.healthgoal == "Sexual Well Being"
             or patient.healthgoal == "Skin and Hair"
-            
         ):
             return redirect("question1")
         return redirect("subgoal")
@@ -678,13 +700,13 @@ def lifestyle2(request):
         patient.drinking_answer = drinkans
         patient.save()
 
-        if (patient.healthgoal == "Weight"
+        if (
+            patient.healthgoal == "Weight"
             or patient.healthgoal == "Gut Improvement"
             or patient.healthgoal == "Specific Conditions"
             or patient.healthgoal == "Ensure Well Being"
             or patient.healthgoal == "Sexual Well Being"
             or patient.healthgoal == "Skin and Hair"
-            
         ):
             return redirect("question1")
 
@@ -697,13 +719,13 @@ def lifestyle2(request):
         patient.drinking_answer = drinkans
         patient.save()
 
-        if (patient.healthgoal == "Weight"
+        if (
+            patient.healthgoal == "Weight"
             or patient.healthgoal == "Gut Improvement"
             or patient.healthgoal == "Specific Conditions"
             or patient.healthgoal == "Ensure Well Being"
             or patient.healthgoal == "Sexual Well Being"
             or patient.healthgoal == "Skin and Hair"
-            
         ):
             return redirect("question1")
         return redirect("subgoal")
@@ -715,13 +737,13 @@ def lifestyle2(request):
         patient.drinking_answer = drinkans
         patient.save()
 
-        if (patient.healthgoal == "Weight"
+        if (
+            patient.healthgoal == "Weight"
             or patient.healthgoal == "Gut Improvement"
             or patient.healthgoal == "Specific Conditions"
             or patient.healthgoal == "Ensure Well Being"
             or patient.healthgoal == "Sexual Well Being"
             or patient.healthgoal == "Skin and Hair"
-            
         ):
             return redirect("question1")
         return redirect("subgoal")
@@ -1375,12 +1397,11 @@ def question1(request):
     elif patient.healthgoal == "Ensure Well Being":
         patient.question1 = "How would you describe your energy levels?"
         patient.save()
-    
+
     elif patient.healthgoal == "Skin and Hair":
         patient.question1 = "Skin Problem"
         patient.save()
-    
-    
+
     return render(
         request,
         "question1.html",
@@ -1413,7 +1434,7 @@ def question2(request):
         patient = Patient.objects.get(patient_id=pk_id)
         patient.answer2 = answer2
         patient.save()
-        if patient.healthgoal == "Weight" or patient.healthgoal == "Skin and Hair" :
+        if patient.healthgoal == "Weight" or patient.healthgoal == "Skin and Hair":
             return redirect("result")
         elif patient.healthgoal == "Gut Improvement":
             return redirect("result")
@@ -1424,7 +1445,11 @@ def question2(request):
         patient = Patient.objects.get(patient_id=pk_id)
         patient.answer2 = answer2
         patient.save()
-        if patient.healthgoal == "Weight" or patient.healthgoal == "Skin and Hair" or patient.healthgoal == "Gut Improvement":
+        if (
+            patient.healthgoal == "Weight"
+            or patient.healthgoal == "Skin and Hair"
+            or patient.healthgoal == "Gut Improvement"
+        ):
             return redirect("result")
         return redirect("specific1")
     if "option4" in request.POST:
@@ -1433,7 +1458,11 @@ def question2(request):
         patient = Patient.objects.get(patient_id=pk_id)
         patient.answer2 = answer2
         patient.save()
-        if patient.healthgoal == "Weight" or patient.healthgoal == "Skin and Hair" or patient.healthgoal == "Gut Improvement":
+        if (
+            patient.healthgoal == "Weight"
+            or patient.healthgoal == "Skin and Hair"
+            or patient.healthgoal == "Gut Improvement"
+        ):
             return redirect("result")
         return redirect("specific1")
     if "option5" in request.POST:
@@ -1442,7 +1471,11 @@ def question2(request):
         patient = Patient.objects.get(patient_id=pk_id)
         patient.answer2 = answer2
         patient.save()
-        if patient.healthgoal == "Weight" or patient.healthgoal == "Skin and Hair" or patient.healthgoal == "Gut Improvement":
+        if (
+            patient.healthgoal == "Weight"
+            or patient.healthgoal == "Skin and Hair"
+            or patient.healthgoal == "Gut Improvement"
+        ):
             return redirect("result")
         return redirect("specific1")
     if "option6" in request.POST:
@@ -1451,7 +1484,11 @@ def question2(request):
         patient = Patient.objects.get(patient_id=pk_id)
         patient.answer2 = answer2
         patient.save()
-        if patient.healthgoal == "Weight" or patient.healthgoal == "Skin and Hair" or patient.healthgoal == "Gut Improvement":
+        if (
+            patient.healthgoal == "Weight"
+            or patient.healthgoal == "Skin and Hair"
+            or patient.healthgoal == "Gut Improvement"
+        ):
             return redirect("result")
         return redirect("specific1")
     if "option7" in request.POST:
@@ -1460,7 +1497,11 @@ def question2(request):
         patient = Patient.objects.get(patient_id=pk_id)
         patient.answer2 = answer2
         patient.save()
-        if patient.healthgoal == "Weight" or patient.healthgoal == "Skin and Hair" or patient.healthgoal == "Gut Improvement":
+        if (
+            patient.healthgoal == "Weight"
+            or patient.healthgoal == "Skin and Hair"
+            or patient.healthgoal == "Gut Improvement"
+        ):
             return redirect("result")
         return redirect("specific1")
     if "option8" in request.POST:
@@ -1626,7 +1667,6 @@ def question2(request):
             patient = Patient.objects.get(patient_id=pk_id)
             patient.answer2 = list4
             patient.save()
-            
 
         if "optionn2" in request.POST:
             optione = request.POST["optionn2"]
@@ -1723,14 +1763,14 @@ def question2(request):
                 return redirect("specific1")
             else:
                 return redirect("result")
-            
+
     elif patient.healthgoal == "Gut Improvement":
         patient.question2 = "Please choose any of the following FIT profiles"
-        
+
     elif patient.healthgoal == "Weight":
         patient.question2 = "How would you describe your energy levels?"
         patient.save()
-        
+
     elif patient.healthgoal == "Skin and Hair":
         patient.question2 = "Hair Problem"
         patient.save()
@@ -2109,7 +2149,7 @@ def sexualspecific7(request):
         patient.specificanswer7 = specificanswer7
         patient.save()
         return redirect("sexualspecific8")
-        
+
     elif "Any ulcers in genital area" in request.POST:
         specificanswer7 = request.POST["Any ulcers in genital area"]
         pk_id = request.session.get("pk_id")
@@ -2117,7 +2157,7 @@ def sexualspecific7(request):
         patient.specificanswer7 = specificanswer7
         patient.save()
         return redirect("sexualspecific8")
-        
+
     elif "Soreness or discharge from penis" in request.POST:
         specificanswer7 = request.POST["Soreness or discharge from penis"]
         pk_id = request.session.get("pk_id")
@@ -2951,8 +2991,8 @@ def result(request):
     patient = Patient.objects.get(patient_id=pk_id)
     test = Test.objects.order_by("id")
     list = []
-    test_link=[]
-    subg=[]
+    test_link = []
+    subg = []
     # HAIR PROBLEM
     if patient.question2 == "Hair Problem":
         subg.append("HAIR PROBLEM")
@@ -2975,22 +3015,84 @@ def result(request):
             list.append(str(test[35]))
             list.append(str(test[37]))
             list.append(str(test[8]))
-            test_link.append({"GOAL SPECIFIC":["CBC","https://pubmed.ncbi.nlm.nih.gov/31502748/"]})
-            test_link.append({"GOAL SPECIFIC":["TFT","https://pubmed.ncbi.nlm.nih.gov/34455910/"]})
-            test_link.append({"GOAL SPECIFIC":["Iron:","https://pubmed.ncbi.nlm.nih.gov/20888066/"]})
-            test_link.append({"GOAL SPECIFIC":["Vit&Min","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6380979/"]})
-            test_link.append({"GOAL SPECIFIC":["Hormones1","https://pubmed.ncbi.nlm.nih.gov/33130791/ "]})
-            test_link.append({"GOAL SPECIFIC":["Hormones2","https://pubmed.ncbi.nlm.nih.gov/14758568/"]})
-            test_link.append({"GOAL SPECIFIC":["Insulin","https://pubmed.ncbi.nlm.nih.gov/25781062/"]})
-            test_link.append({"GOAL SPECIFIC":["Sex Hormones","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5817427/"]})
-            test_link.append({"GOAL SPECIFIC":["ANA","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4377414/"]})
-            test_link.append({"GOAL SPECIFIC":["CRP","https://pubmed.ncbi.nlm.nih.gov/25484412/"]})
+            test_link.append(
+                {"GOAL SPECIFIC": ["CBC", "https://pubmed.ncbi.nlm.nih.gov/31502748/"]}
+            )
+            test_link.append(
+                {"GOAL SPECIFIC": ["TFT", "https://pubmed.ncbi.nlm.nih.gov/34455910/"]}
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Iron:",
+                        "https://pubmed.ncbi.nlm.nih.gov/20888066/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Vit&Min",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6380979/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Hormones1",
+                        "https://pubmed.ncbi.nlm.nih.gov/33130791/ ",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Hormones2",
+                        "https://pubmed.ncbi.nlm.nih.gov/14758568/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Insulin",
+                        "https://pubmed.ncbi.nlm.nih.gov/25781062/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Sex Hormones",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5817427/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "ANA",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4377414/",
+                    ]
+                }
+            )
+            test_link.append(
+                {"GOAL SPECIFIC": ["CRP", "https://pubmed.ncbi.nlm.nih.gov/25484412/"]}
+            )
             if patient.gender == "Female":
                 list.append(str(test[102]))
                 list.append(str(test[40]))
                 list.append(str(test[41]))
                 list.append(str(test[42]))
-                test_link.append({"GOAL SPECIFIC":["Female Hormones","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7432488/"]})
+                test_link.append(
+                    {
+                        "GOAL SPECIFIC": [
+                            "Female Hormones",
+                            "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7432488/",
+                        ]
+                    }
+                )
             pk_id = request.session.get("pk_id")
             patient = Patient.objects.get(patient_id=pk_id)
             patient.tests = list
@@ -3008,11 +3110,24 @@ def result(request):
             list.append(str(test[32]))
             list.append(str(test[46]))
             list.append(str(test[11]))
-            test_link.append({"GOAL SPECIFIC":["CBC","https://pubmed.ncbi.nlm.nih.gov/31502748/"]})
-            test_link.append({"GOAL SPECIFIC":["TFT","https://pubmed.ncbi.nlm.nih.gov/34455910/"]})
-            test_link.append({"GOAL SPECIFIC":["Iron","https://pubmed.ncbi.nlm.nih.gov/20888066/"]})
-            test_link.append({"GOAL SPECIFIC":["Vit&Min","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6380979/"]})
-            
+            test_link.append(
+                {"GOAL SPECIFIC": ["CBC", "https://pubmed.ncbi.nlm.nih.gov/31502748/"]}
+            )
+            test_link.append(
+                {"GOAL SPECIFIC": ["TFT", "https://pubmed.ncbi.nlm.nih.gov/34455910/"]}
+            )
+            test_link.append(
+                {"GOAL SPECIFIC": ["Iron", "https://pubmed.ncbi.nlm.nih.gov/20888066/"]}
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Vit&Min",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6380979/",
+                    ]
+                }
+            )
+
             pk_id = request.session.get("pk_id")
             patient = Patient.objects.get(patient_id=pk_id)
             patient.tests = list
@@ -3027,8 +3142,17 @@ def result(request):
             list.append(str(test[29]))
             list.append(str(test[32]))
             list.append(str(test[11]))
-            test_link.append({"GOAL SPECIFIC":["Iron","https://pubmed.ncbi.nlm.nih.gov/20888066/"]})
-            test_link.append({"GOAL SPECIFIC":["Vit&Min","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6380979/"]})
+            test_link.append(
+                {"GOAL SPECIFIC": ["Iron", "https://pubmed.ncbi.nlm.nih.gov/20888066/"]}
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Vit&Min",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6380979/",
+                    ]
+                }
+            )
             pk_id = request.session.get("pk_id")
             patient = Patient.objects.get(patient_id=pk_id)
             patient.tests = list
@@ -3047,14 +3171,39 @@ def result(request):
             list.append(str(test[44]))
             list.append(str(test[45]))
             list.append(str(test[46]))
-            test_link.append({"GOAL SPECIFIC":["DHEAS","https://pubmed.ncbi.nlm.nih.gov/2426899/"]})
-            test_link.append({"GOAL SPECIFIC":["SHBG","https://pubmed.ncbi.nlm.nih.gov/6458423/"]})
-            test_link.append({"GOAL SPECIFIC":["Lipid Profile","https://pubmed.ncbi.nlm.nih.gov/32021370/"]})
-            test_link.append({"GOAL SPECIFIC":["Testosterone","https://pubmed.ncbi.nlm.nih.gov/6258368/"]})
-            
+            test_link.append(
+                {"GOAL SPECIFIC": ["DHEAS", "https://pubmed.ncbi.nlm.nih.gov/2426899/"]}
+            )
+            test_link.append(
+                {"GOAL SPECIFIC": ["SHBG", "https://pubmed.ncbi.nlm.nih.gov/6458423/"]}
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Lipid Profile",
+                        "https://pubmed.ncbi.nlm.nih.gov/32021370/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Testosterone",
+                        "https://pubmed.ncbi.nlm.nih.gov/6258368/",
+                    ]
+                }
+            )
+
             if patient.gender == "Female":
-                test_link.append({"GOAL SPECIFIC":["Female Hormone","https://pubmed.ncbi.nlm.nih.gov/2151388/"]})
-            
+                test_link.append(
+                    {
+                        "GOAL SPECIFIC": [
+                            "Female Hormone",
+                            "https://pubmed.ncbi.nlm.nih.gov/2151388/",
+                        ]
+                    }
+                )
+
             pk_id = request.session.get("pk_id")
             patient = Patient.objects.get(patient_id=pk_id)
             patient.tests = list
@@ -3065,9 +3214,18 @@ def result(request):
             if patient.age <= 13:
                 list.append(str(test[49]))
             list.append(str(test[46]))
-            test_link.append({"GOAL SPECIFIC":["IgE","https://pubmed.ncbi.nlm.nih.gov/14998387/"]})
-            test_link.append({"GOAL SPECIFIC":["Intolerance","https://pubmed.ncbi.nlm.nih.gov/16782524/"]})
-            
+            test_link.append(
+                {"GOAL SPECIFIC": ["IgE", "https://pubmed.ncbi.nlm.nih.gov/14998387/"]}
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Intolerance",
+                        "https://pubmed.ncbi.nlm.nih.gov/16782524/",
+                    ]
+                }
+            )
+
             pk_id = request.session.get("pk_id")
             patient = Patient.objects.get(patient_id=pk_id)
             patient.tests = list
@@ -3077,9 +3235,23 @@ def result(request):
             list.append(str(test[48]))
             if patient.age <= 13:
                 list.append(str(test[49]))
-            test_link.append({"GOAL SPECIFIC":["Allergy","https://pubmed.ncbi.nlm.nih.gov/35362938/"]})
-            test_link.append({"GOAL SPECIFIC":["Intolerance","https://pubmed.ncbi.nlm.nih.gov/33601370/"]})
-            
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Allergy",
+                        "https://pubmed.ncbi.nlm.nih.gov/35362938/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Intolerance",
+                        "https://pubmed.ncbi.nlm.nih.gov/33601370/",
+                    ]
+                }
+            )
+
             pk_id = request.session.get("pk_id")
             patient = Patient.objects.get(patient_id=pk_id)
             patient.tests = list
@@ -3089,9 +3261,23 @@ def result(request):
             list.append(str(test[48]))
             if patient.age <= 13:
                 list.append(str(test[49]))
-            test_link.append({"GOAL SPECIFIC":["Allergy","https://pubmed.ncbi.nlm.nih.gov/28319560/"]})
-            test_link.append({"GOAL SPECIFIC":["Intolerance","https://pubmed.ncbi.nlm.nih.gov/16782524/"]})
-            
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Allergy",
+                        "https://pubmed.ncbi.nlm.nih.gov/28319560/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Intolerance",
+                        "https://pubmed.ncbi.nlm.nih.gov/16782524/",
+                    ]
+                }
+            )
+
             pk_id = request.session.get("pk_id")
             patient = Patient.objects.get(patient_id=pk_id)
             patient.tests = list
@@ -3101,11 +3287,29 @@ def result(request):
             list.append(str(test[48]))
             if patient.age <= 13:
                 list.append(str(test[49]))
-            test_link.append({"GOAL SPECIFIC":["Anti TPO","https://pubmed.ncbi.nlm.nih.gov/25653881/"]})
-            test_link.append({"GOAL SPECIFIC":["Anti TG","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3121018/"]})
-            test_link.append({"GOAL SPECIFIC":["ANA","https://pubmed.ncbi.nlm.nih.gov/12562399/"]})
-            test_link.append({"GOAL SPECIFIC":["TFT","https://pubmed.ncbi.nlm.nih.gov/30698146/"]})
-            
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Anti TPO",
+                        "https://pubmed.ncbi.nlm.nih.gov/25653881/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Anti TG",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3121018/",
+                    ]
+                }
+            )
+            test_link.append(
+                {"GOAL SPECIFIC": ["ANA", "https://pubmed.ncbi.nlm.nih.gov/12562399/"]}
+            )
+            test_link.append(
+                {"GOAL SPECIFIC": ["TFT", "https://pubmed.ncbi.nlm.nih.gov/30698146/"]}
+            )
+
             pk_id = request.session.get("pk_id")
             patient = Patient.objects.get(patient_id=pk_id)
             patient.tests = list
@@ -3158,32 +3362,60 @@ def result(request):
     # SEXUAL MALE
     if patient.question1 == "Do you have any of these symptoms?":
         if patient.answer1 != "None":
-        
             subg.append("SEXUAL")
             list.append(str(test[27]))
             list.append(str(test[103]))
             list.append(str(test[4]))
             list.append(str(test[7]))
-            test_link.append({"GOAL SPECIFIC":["CBC","https://pubmed.ncbi.nlm.nih.gov/19377227/"]})
-            test_link.append({"GOAL SPECIFIC":["UTI1","https://www.ncbi.nlm.nih.gov/books/NBK470195/"]})
-            test_link.append({"GOAL SPECIFIC":["UTI2","https://pubmed.ncbi.nlm.nih.gov/29305250/"]})
+            test_link.append(
+                {"GOAL SPECIFIC": ["CBC", "https://pubmed.ncbi.nlm.nih.gov/19377227/"]}
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "UTI1",
+                        "https://www.ncbi.nlm.nih.gov/books/NBK470195/",
+                    ]
+                }
+            )
+            test_link.append(
+                {"GOAL SPECIFIC": ["UTI2", "https://pubmed.ncbi.nlm.nih.gov/29305250/"]}
+            )
             pk_id = request.session.get("pk_id")
             patient = Patient.objects.get(patient_id=pk_id)
             patient.tests = list
             patient.save()
-    
 
     if patient.specificanswer1 == "Often" or patient.specificanswer1 == "Everyday":
         list.append(str(test[23]))
-        test_link.append({"GOAL SPECIFIC":["hbA1c","https://www.diabetes.co.uk/symptoms/polyuria.html"]})
-        test_link.append({"GOAL SPECIFIC":["Urine test","https://pubmed.ncbi.nlm.nih.gov/34509418/"]})
-        test_link.append({"GOAL SPECIFIC":["CBC","https://pubmed.ncbi.nlm.nih.gov/2134078/"]}) 
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "hbA1c",
+                    "https://www.diabetes.co.uk/symptoms/polyuria.html",
+                ]
+            }
+        )
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "Urine test",
+                    "https://pubmed.ncbi.nlm.nih.gov/34509418/",
+                ]
+            }
+        )
+        test_link.append(
+            {"GOAL SPECIFIC": ["CBC", "https://pubmed.ncbi.nlm.nih.gov/2134078/"]}
+        )
         pk_id = request.session.get("pk_id")
         patient = Patient.objects.get(patient_id=pk_id)
         patient.tests = list
         patient.save()
-        
-    if patient.specificquestion2=="Do you have any of these symptoms" and patient.gender == "Male":
+
+    if (
+        patient.specificquestion2 == "Do you have any of these symptoms"
+        and patient.gender == "Male"
+    ):
         if patient.specificanswer2 != "None":
             list.append(str(test[27]))
             list.append(str(test[103]))
@@ -3191,13 +3423,19 @@ def result(request):
             list.append(str(test[7]))
             if patient.age >= 50:
                 list.append(str(test[60]))
-            test_link.append({"GOAL SPECIFIC":["Urine Retention","https://www.ncbi.nlm.nih.gov/books/NBK538499/"]})
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Urine Retention",
+                        "https://www.ncbi.nlm.nih.gov/books/NBK538499/",
+                    ]
+                }
+            )
             pk_id = request.session.get("pk_id")
             patient = Patient.objects.get(patient_id=pk_id)
             patient.tests = list
             patient.save()
-        
-      
+
     if patient.specificanswer3 == "Low":
         subg.append("SEXUAL")
         list.append(str(test[35]))
@@ -3208,44 +3446,165 @@ def result(request):
         list.append(str(test[52]))
         list.append(str(test[30]))
         if patient.gender == "Male":
-            test_link.append({"GOAL SPECIFIC":["Testo&Cortisol","https://pubmed.ncbi.nlm.nih.gov/21993767/"]})
-            test_link.append({"GOAL SPECIFIC":["DHEAS","https://pubmed.ncbi.nlm.nih.gov/28118059/"]})
-            test_link.append({"GOAL SPECIFIC":["Sex Hormone","https://pubmed.ncbi.nlm.nih.gov/11942957/"]})
-            test_link.append({"GOAL SPECIFIC":["Thyroid Tests","https://pubmed.ncbi.nlm.nih.gov/30057137/"]})
-            test_link.append({"GOAL SPECIFIC":["Cholesterol","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6060264/"]})
-            test_link.append({"GOAL SPECIFIC":["Iron","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6283628/"]})
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Testo&Cortisol",
+                        "https://pubmed.ncbi.nlm.nih.gov/21993767/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "DHEAS",
+                        "https://pubmed.ncbi.nlm.nih.gov/28118059/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Sex Hormone",
+                        "https://pubmed.ncbi.nlm.nih.gov/11942957/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Thyroid Tests",
+                        "https://pubmed.ncbi.nlm.nih.gov/30057137/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Cholesterol",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6060264/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Iron",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6283628/",
+                    ]
+                }
+            )
         elif patien.gender == "Female":
             list.append(str(test[41]))
             list.append(str(test[40]))
             list.append(str(test[42]))
-            test_link.append({"GOAL SPECIFIC":["Hormones 1","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5776161/"]})
-            test_link.append({"GOAL SPECIFIC":["Hormones 2","https://pubmed.ncbi.nlm.nih.gov/36018001/"]})
-          
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Hormones 1",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5776161/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Hormones 2",
+                        "https://pubmed.ncbi.nlm.nih.gov/36018001/",
+                    ]
+                }
+            )
+
         pk_id = request.session.get("pk_id")
         patient = Patient.objects.get(patient_id=pk_id)
         patient.tests = list
         patient.save()
-        
+
     elif patient.specificanswer3 == "High":
         list.append(str(test[35]))
         list.append(str(test[102]))
         list.append(str(test[55]))
         list.append(str(test[52]))
-        test_link.append({"GOAL SPECIFIC":["Intolerance","https://pubmed.ncbi.nlm.nih.gov/21993767/"]})
-        test_link.append({"GOAL SPECIFIC":["DHEAS","https://pubmed.ncbi.nlm.nih.gov/28118059/"]})
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "Intolerance",
+                    "https://pubmed.ncbi.nlm.nih.gov/21993767/",
+                ]
+            }
+        )
+        test_link.append(
+            {"GOAL SPECIFIC": ["DHEAS", "https://pubmed.ncbi.nlm.nih.gov/28118059/"]}
+        )
         if patient.gender == "Male":
-            test_link.append({"GOAL SPECIFIC":["Testo&Cortisol","https://pubmed.ncbi.nlm.nih.gov/21993767/"]})
-            test_link.append({"GOAL SPECIFIC":["DHEAS","https://pubmed.ncbi.nlm.nih.gov/28118059/"]})
-            test_link.append({"GOAL SPECIFIC":["Sex Hormone","https://pubmed.ncbi.nlm.nih.gov/11942957/"]})
-            test_link.append({"GOAL SPECIFIC":["Thyroid Tests","https://pubmed.ncbi.nlm.nih.gov/30057137/"]})
-            test_link.append({"GOAL SPECIFIC":["Cholesterol","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6060264/"]})
-            test_link.append({"GOAL SPECIFIC":["Iron","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6283628/"]})
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Testo&Cortisol",
+                        "https://pubmed.ncbi.nlm.nih.gov/21993767/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "DHEAS",
+                        "https://pubmed.ncbi.nlm.nih.gov/28118059/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Sex Hormone",
+                        "https://pubmed.ncbi.nlm.nih.gov/11942957/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Thyroid Tests",
+                        "https://pubmed.ncbi.nlm.nih.gov/30057137/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Cholesterol",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6060264/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Iron",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6283628/",
+                    ]
+                }
+            )
         elif patient.gender == "Female":
             list.append(str(test[41]))
             list.append(str(test[40]))
             list.append(str(test[42]))
-            test_link.append({"GOAL SPECIFIC":["Hormones 1","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5776161/"]})
-            test_link.append({"GOAL SPECIFIC":["Hormones 2","https://pubmed.ncbi.nlm.nih.gov/36018001/"]})
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Hormones 1",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5776161/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Hormones 2",
+                        "https://pubmed.ncbi.nlm.nih.gov/36018001/",
+                    ]
+                }
+            )
         pk_id = request.session.get("pk_id")
         patient = Patient.objects.get(patient_id=pk_id)
         patient.tests = list
@@ -3287,10 +3646,28 @@ def result(request):
 
     if patient.specificanswer7 != "None" and patient.healthgoal == "Sexual Well Being":
         list.append(str(test[66]))
-        test_link.append({"GOAL SPECIFIC":["STI1","https://www.ncbi.nlm.nih.gov/books/NBK560808/"]})
-        test_link.append({"GOAL SPECIFIC":["STI Screening","https://pubmed.ncbi.nlm.nih.gov/30704656/"]})
-        test_link.append({"GOAL SPECIFIC":["Bact Infections","https://pubmed.ncbi.nlm.nih.gov/14974283/"]})
-        test_link.append({"GOAL SPECIFIC":["STI2","https://pubmed.ncbi.nlm.nih.gov/35015033/"]})
+        test_link.append(
+            {"GOAL SPECIFIC": ["STI1", "https://www.ncbi.nlm.nih.gov/books/NBK560808/"]}
+        )
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "STI Screening",
+                    "https://pubmed.ncbi.nlm.nih.gov/30704656/",
+                ]
+            }
+        )
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "Bact Infections",
+                    "https://pubmed.ncbi.nlm.nih.gov/14974283/",
+                ]
+            }
+        )
+        test_link.append(
+            {"GOAL SPECIFIC": ["STI2", "https://pubmed.ncbi.nlm.nih.gov/35015033/"]}
+        )
         pk_id = request.session.get("pk_id")
         patient = Patient.objects.get(patient_id=pk_id)
         patient.tests = list
@@ -3327,9 +3704,30 @@ def result(request):
         list.append(str(test[42]))
         list.append(str(test[33]))
         if patient.gender == "Male":
-            test_link.append({"GOAL SPECIFIC":["Male Infertility 1","https://www.ncbi.nlm.nih.gov/books/NBK562258/"]})
-            test_link.append({"GOAL SPECIFIC":["Prolactin","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7196164/"]})
-            test_link.append({"GOAL SPECIFIC":["Male Infertility 2","https://pubmed.ncbi.nlm.nih.gov/387166/"]})
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Male Infertility 1",
+                        "https://www.ncbi.nlm.nih.gov/books/NBK562258/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Prolactin",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7196164/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Male Infertility 2",
+                        "https://pubmed.ncbi.nlm.nih.gov/387166/",
+                    ]
+                }
+            )
         if patient.gender == "Female":
             list.append(str(test[21]))
             list.append(str(test[4]))
@@ -3338,7 +3736,14 @@ def result(request):
             list.append(str(test[71]))
             list.append(str(test[42]))
             list.append(str(test[105]))
-            test_link.append({"GOAL SPECIFIC":["Female Infertility","hhttps://www.ncbi.nlm.nih.gov/books/NBK556033/#article-23502.s7"]})
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Female Infertility",
+                        "hhttps://www.ncbi.nlm.nih.gov/books/NBK556033/#article-23502.s7",
+                    ]
+                }
+            )
 
         pk_id = request.session.get("pk_id")
         patient = Patient.objects.get(patient_id=pk_id)
@@ -3378,15 +3783,38 @@ def result(request):
         list.append(str(test[70]))
         list.append(str(test[45]))
         list.append(str(test[72]))
-        test_link.append({"GOAL SPECIFIC":["Thyroid tests","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9107865/"]})
-        test_link.append({"GOAL SPECIFIC":["Iron","https://pubmed.ncbi.nlm.nih.gov/36706856/"]})
-        test_link.append({"GOAL SPECIFIC":["Menorrhagia 1","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6142441/"]})
-        test_link.append({"GOAL SPECIFIC":["Menorrhagia 2","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1952557/"]})
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "Thyroid tests",
+                    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9107865/",
+                ]
+            }
+        )
+        test_link.append(
+            {"GOAL SPECIFIC": ["Iron", "https://pubmed.ncbi.nlm.nih.gov/36706856/"]}
+        )
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "Menorrhagia 1",
+                    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6142441/",
+                ]
+            }
+        )
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "Menorrhagia 2",
+                    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1952557/",
+                ]
+            }
+        )
         pk_id = request.session.get("pk_id")
         patient = Patient.objects.get(patient_id=pk_id)
         patient.tests = list
         patient.save()
-        
+
     if patient.historyfemale_answer == "My periods are irregular":
         list.append(str(test[69]))
         list.append(str(test[31]))
@@ -3401,18 +3829,32 @@ def result(request):
         list.append(str(test[72]))
         list.append(str(test[33]))
         list.append(str(test[71]))
-        
-        test_link.append({"GOAL SPECIFIC":["Thyroid tests","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5980701/"]})
-        test_link.append({"GOAL SPECIFIC":["Iron","https://pubmed.ncbi.nlm.nih.gov/1820649/"]})
-        test_link.append({"GOAL SPECIFIC":["Irregular periods","https://www.ncbi.nlm.nih.gov/books/NBK560575/"]})
+
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "Thyroid tests",
+                    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5980701/",
+                ]
+            }
+        )
+        test_link.append(
+            {"GOAL SPECIFIC": ["Iron", "https://pubmed.ncbi.nlm.nih.gov/1820649/"]}
+        )
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "Irregular periods",
+                    "https://www.ncbi.nlm.nih.gov/books/NBK560575/",
+                ]
+            }
+        )
 
         pk_id = request.session.get("pk_id")
         patient = Patient.objects.get(patient_id=pk_id)
         patient.tests = list
         patient.save()
-        
-        
-        
+
     if patient.historyfemale_answer == "I have menstrual cramps during periods":
         list.append(str(test[69]))
         list.append(str(test[31]))
@@ -3447,15 +3889,34 @@ def result(request):
         list.append(str(test[4]))
         list.append(str(test[29]))
         list.append(str(test[42]))
-        test_link.append({"GOAL SPECIFIC":["Thyroid tests","https://pubmed.ncbi.nlm.nih.gov/32562185/"]})
-        test_link.append({"GOAL SPECIFIC":["Anemia","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4401847/"]})
-        test_link.append({"GOAL SPECIFIC":["Prolactin","https://pubmed.ncbi.nlm.nih.gov/665730/"]})
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "Thyroid tests",
+                    "https://pubmed.ncbi.nlm.nih.gov/32562185/",
+                ]
+            }
+        )
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "Anemia",
+                    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4401847/",
+                ]
+            }
+        )
+        test_link.append(
+            {"GOAL SPECIFIC": ["Prolactin", "https://pubmed.ncbi.nlm.nih.gov/665730/"]}
+        )
 
         pk_id = request.session.get("pk_id")
         patient = Patient.objects.get(patient_id=pk_id)
         patient.tests = list
         patient.save()
-    if patient.historyfemale_answer == "My periods stopped on their own  (I had menopause)":
+    if (
+        patient.historyfemale_answer
+        == "My periods stopped on their own  (I had menopause)"
+    ):
         list.append(str(test[74]))
         list.append(str(test[21]))
         list.append(str(test[69]))
@@ -3464,14 +3925,27 @@ def result(request):
         list.append(str(test[55]))
         list.append(str(test[20]))
         list.append(str(test[40]))
-        test_link.append({"GOAL SPECIFIC":["Postmenopause 1","https://www.ncbi.nlm.nih.gov/books/NBK279131/"]})
-        test_link.append({"GOAL SPECIFIC":["Postmenopause 2","https://www.ncbi.nlm.nih.gov/books/NBK560840/"]})
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "Postmenopause 1",
+                    "https://www.ncbi.nlm.nih.gov/books/NBK279131/",
+                ]
+            }
+        )
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "Postmenopause 2",
+                    "https://www.ncbi.nlm.nih.gov/books/NBK560840/",
+                ]
+            }
+        )
 
         pk_id = request.session.get("pk_id")
         patient = Patient.objects.get(patient_id=pk_id)
         patient.tests = list
         patient.save()
-
 
     if patient.specificanswer9 == "Are you planning a family soon":
         list.append(str(test[4]))
@@ -3522,9 +3996,23 @@ def result(request):
     ):
         if patient.specificanswer3 == "Yes":
             list.append(str(test[73]))
-            test_link.append({"GOAL SPECIFIC":["Hb HPLC 1","https://pubmed.ncbi.nlm.nih.gov/25548455/"]})
-            test_link.append({"GOAL SPECIFIC":["Hb HPLC 2","https://www.ncbi.nlm.nih.gov/books/NBK585044/#article-145922.s6"]})
-            
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Hb HPLC 1",
+                        "https://pubmed.ncbi.nlm.nih.gov/25548455/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Hb HPLC 2",
+                        "https://www.ncbi.nlm.nih.gov/books/NBK585044/#article-145922.s6",
+                    ]
+                }
+            )
+
             pk_id = request.session.get("pk_id")
             patient = Patient.objects.get(patient_id=pk_id)
             patient.tests = list
@@ -3577,41 +4065,104 @@ def result(request):
             list.append(str(test[26]))
             list.append(str(test[27]))
             list.append(str(test[28]))
-            test_link.append({"GOAL SPECIFIC":["Lipid Profile","https://pubmed.ncbi.nlm.nih.gov/30200612/"]})
-            test_link.append({"GOAL SPECIFIC":["BUN","https://pubmed.ncbi.nlm.nih.gov/29241622/ "]})
-            test_link.append({"GOAL SPECIFIC":["Creatinine","https://pubmed.ncbi.nlm.nih.gov/22195378/"]})
-            test_link.append({"GOAL SPECIFIC":["Microalbuminuria","https://pubmed.ncbi.nlm.nih.gov/31110390/ "]})
-            test_link.append({"GOAL SPECIFIC":["Urine Routine","https://pubmed.ncbi.nlm.nih.gov/20222150/"]})
-            test_link.append({"GOAL SPECIFIC":["BSF,PP,more..","https://rb.gy/susxds"]})
-          
-            
-            
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Lipid Profile",
+                        "https://pubmed.ncbi.nlm.nih.gov/30200612/",
+                    ]
+                }
+            )
+            test_link.append(
+                {"GOAL SPECIFIC": ["BUN", "https://pubmed.ncbi.nlm.nih.gov/29241622/ "]}
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Creatinine",
+                        "https://pubmed.ncbi.nlm.nih.gov/22195378/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Microalbuminuria",
+                        "https://pubmed.ncbi.nlm.nih.gov/31110390/ ",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Urine Routine",
+                        "https://pubmed.ncbi.nlm.nih.gov/20222150/",
+                    ]
+                }
+            )
+            test_link.append(
+                {"GOAL SPECIFIC": ["BSF,PP,more..", "https://rb.gy/susxds"]}
+            )
+
         if patient.answer1 == "Hypertension":
             list.append(str(test[24]))
             list.append(str(test[25]))
             list.append(str(test[26]))
             list.append(str(test[27]))
             list.append(str(test[28]))
-            test_link.append({"GOAL SPECIFIC":["Microalbuminuria","https://pubmed.ncbi.nlm.nih.gov/9839284/"]})
-            test_link.append({"GOAL SPECIFIC":["Urine Routine","https://pubmed.ncbi.nlm.nih.gov/34728882/"]})
-            test_link.append({"GOAL SPECIFIC":["Creatinine","https://pubmed.ncbi.nlm.nih.gov/11343443/"]})
-            test_link.append({"GOAL SPECIFIC":["Microalbuminuria","https://pubmed.ncbi.nlm.nih.gov/31110390/ "]})
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Microalbuminuria",
+                        "https://pubmed.ncbi.nlm.nih.gov/9839284/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Urine Routine",
+                        "https://pubmed.ncbi.nlm.nih.gov/34728882/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Creatinine",
+                        "https://pubmed.ncbi.nlm.nih.gov/11343443/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Microalbuminuria",
+                        "https://pubmed.ncbi.nlm.nih.gov/31110390/ ",
+                    ]
+                }
+            )
 
-            
         if patient.answer1 == "Both":
             list.append(str(test[15]))
-        
+
         if patient.answer2 == "10-15 years" or patient.answer2 == " > 15 years":
             list.append(str(test[14]))
-            test_link.append({"GOAL SPECIFIC":["Cystatin C","https://pubmed.ncbi.nlm.nih.gov/20885369/"]})
-          
-            
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Cystatin C",
+                        "https://pubmed.ncbi.nlm.nih.gov/20885369/",
+                    ]
+                }
+            )
+
             pk_id = request.session.get("pk_id")
             patient = Patient.objects.get(patient_id=pk_id)
             patient.tests = list
             patient.save()
 
-    #SLEEP AND MOOD
+    # SLEEP AND MOOD
     if patient.question1 == "How often do you have trouble falling or staying asleep?":
         subg.append("SLEEP")
         if patient.answer1 == "Often" or patient.answer1 == "Everyday":
@@ -3624,12 +4175,34 @@ def result(request):
             list.append(str(test[94]))
             list.append(str(test[29]))
             list.append(str(test[55]))
-            test_link.append({"GOAL SPECIFIC":["CRP","https://pubmed.ncbi.nlm.nih.gov/14975482/"]})
-            test_link.append({"GOAL SPECIFIC":["Micronutrients","https://pubmed.ncbi.nlm.nih.gov/31581561/"]})
-            test_link.append({"GOAL SPECIFIC":["Hormones","https://pubmed.ncbi.nlm.nih.gov/23092405/"]})
-            test_link.append({"GOAL SPECIFIC":["Omega","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8262633/"]})
-            
-            
+            test_link.append(
+                {"GOAL SPECIFIC": ["CRP", "https://pubmed.ncbi.nlm.nih.gov/14975482/"]}
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Micronutrients",
+                        "https://pubmed.ncbi.nlm.nih.gov/31581561/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Hormones",
+                        "https://pubmed.ncbi.nlm.nih.gov/23092405/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Omega",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8262633/",
+                    ]
+                }
+            )
+
             if patient.gender == "Female":
                 list.append(str(test[45]))
             pk_id = request.session.get("pk_id")
@@ -3647,10 +4220,33 @@ def result(request):
             list.append(str(test[94]))
             list.append(str(test[29]))
             list.append(str(test[55]))
-            test_link.append({"GOAL SPECIFIC":["CRP","https://pubmed.ncbi.nlm.nih.gov/14975482/"]})
-            test_link.append({"GOAL SPECIFIC":["Micronutrients","https://pubmed.ncbi.nlm.nih.gov/31581561/"]})
-            test_link.append({"GOAL SPECIFIC":["Hormones","https://pubmed.ncbi.nlm.nih.gov/23092405/"]})
-            test_link.append({"GOAL SPECIFIC":["Omega","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8262633/"]})
+            test_link.append(
+                {"GOAL SPECIFIC": ["CRP", "https://pubmed.ncbi.nlm.nih.gov/14975482/"]}
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Micronutrients",
+                        "https://pubmed.ncbi.nlm.nih.gov/31581561/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Hormones",
+                        "https://pubmed.ncbi.nlm.nih.gov/23092405/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Omega",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8262633/",
+                    ]
+                }
+            )
             if patient.gender == "Female":
                 list.append(str(test[45]))
             pk_id = request.session.get("pk_id")
@@ -3667,10 +4263,38 @@ def result(request):
             list.append(str(test[30]))
             list.append(str(test[59]))
             list.append(str(test[4]))
-            test_link.append({"GOAL SPECIFIC":["HbA1c","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5628550/"]})
-            test_link.append({"GOAL SPECIFIC":["Iron/Ferritin","https://pubmed.ncbi.nlm.nih.gov/32713229/"]})
-            test_link.append({"GOAL SPECIFIC":["CBC","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8474608/"]})
-            test_link.append({"GOAL SPECIFIC":["Omega","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8262633/"]})
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "HbA1c",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5628550/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Iron/Ferritin",
+                        "https://pubmed.ncbi.nlm.nih.gov/32713229/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "CBC",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8474608/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Omega",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8262633/",
+                    ]
+                }
+            )
 
             if patient.gender == "Female":
                 list.append(str(test[45]))
@@ -3678,14 +4302,13 @@ def result(request):
             patient = Patient.objects.get(patient_id=pk_id)
             patient.tests = list
             patient.save()
-    if (
-        patient.specificquestion3
-        == "Do you snore during sleep?"
-    ):
+    if patient.specificquestion3 == "Do you snore during sleep?":
         if patient.specificanswer3 == "Often" or patient.specificanswer2 == "Everyday":
             list.append(str(test[85]))
             list.append(str(test[4]))
-            test_link.append({"GOAL SPECIFIC":["CBC","https://pubmed.ncbi.nlm.nih.gov/25126033/"]})
+            test_link.append(
+                {"GOAL SPECIFIC": ["CBC", "https://pubmed.ncbi.nlm.nih.gov/25126033/"]}
+            )
 
             if patient.gender == "Female":
                 list.append(str(test[45]))
@@ -3693,8 +4316,7 @@ def result(request):
             patient = Patient.objects.get(patient_id=pk_id)
             patient.tests = list
             patient.save()
-            
-    
+
     if (
         patient.specificquestion5
         == "Do you have difficulty in staying awake during the day?"
@@ -3709,10 +4331,33 @@ def result(request):
             list.append(str(test[94]))
             list.append(str(test[29]))
             list.append(str(test[55]))
-            test_link.append({"GOAL SPECIFIC":["CRP","https://pubmed.ncbi.nlm.nih.gov/14975482/"]})
-            test_link.append({"GOAL SPECIFIC":["Micronutrients","https://pubmed.ncbi.nlm.nih.gov/31581561/"]})
-            test_link.append({"GOAL SPECIFIC":["Hormones","https://pubmed.ncbi.nlm.nih.gov/23092405/"]})
-            test_link.append({"GOAL SPECIFIC":["Omega","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8262633/"]})
+            test_link.append(
+                {"GOAL SPECIFIC": ["CRP", "https://pubmed.ncbi.nlm.nih.gov/14975482/"]}
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Micronutrients",
+                        "https://pubmed.ncbi.nlm.nih.gov/31581561/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Hormones",
+                        "https://pubmed.ncbi.nlm.nih.gov/23092405/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Omega",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8262633/",
+                    ]
+                }
+            )
 
             if patient.gender == "Female":
                 list.append(str(test[45]))
@@ -3730,8 +4375,22 @@ def result(request):
             list.append(str(test[30]))
             list.append(str(test[59]))
             list.append(str(test[4]))
-            test_link.append({"GOAL SPECIFIC":["HbA1c","https://pubmed.ncbi.nlm.nih.gov/25216659/"]})
-            test_link.append({"GOAL SPECIFIC":["CBC, Creatinine and Micronutrients","https://www.ncbi.nlm.nih.gov/books/NBK430878/"]})
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "HbA1c",
+                        "https://pubmed.ncbi.nlm.nih.gov/25216659/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "CBC, Creatinine and Micronutrients",
+                        "https://www.ncbi.nlm.nih.gov/books/NBK430878/",
+                    ]
+                }
+            )
 
             if patient.gender == "Female":
                 list.append(str(test[45]))
@@ -3750,10 +4409,38 @@ def result(request):
             list.append(str(test[85]))
             list.append(str(test[4]))
             list.append(str(test[27]))
-            test_link.append({"GOAL SPECIFIC":["HbA1c","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4478581/"]})
-            test_link.append({"GOAL SPECIFIC":["PCA","https://www.ncbi.nlm.nih.gov/books/NBK557495/"]})
-            test_link.append({"GOAL SPECIFIC":["Urine Tests","https://www.ncbi.nlm.nih.gov/books/NBK518987/"]})
-            test_link.append({"GOAL SPECIFIC":["Calcium","https://pubmed.ncbi.nlm.nih.gov/35323672/"]})
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "HbA1c",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4478581/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "PCA",
+                        "https://www.ncbi.nlm.nih.gov/books/NBK557495/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Urine Tests",
+                        "https://www.ncbi.nlm.nih.gov/books/NBK518987/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Calcium",
+                        "https://pubmed.ncbi.nlm.nih.gov/35323672/",
+                    ]
+                }
+            )
 
             if patient.age >= 50:
                 list.append(str(test[60]))
@@ -3797,15 +4484,53 @@ def result(request):
         list.append(str(test[59]))
         list.append(str(test[38]))
         list.append(str(test[58]))
-        test_link.append({"GOAL SPECIFIC":["CBC","https://pubmed.ncbi.nlm.nih.gov/28697416/"]})
-        test_link.append({"GOAL SPECIFIC":["Thyroid tests","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3246784/"]})
-        test_link.append({"GOAL SPECIFIC":["Anti TPO","https://pubmed.ncbi.nlm.nih.gov/15317653/"]})
-        test_link.append({"GOAL SPECIFIC":["Macronutrients","https://pubmed.ncbi.nlm.nih.gov/17723028/"]})
-        test_link.append({"GOAL SPECIFIC":["Lactate","https://pubmed.ncbi.nlm.nih.gov/29726068/"]})
-        test_link.append({"GOAL SPECIFIC":["LFT","https://pubmed.ncbi.nlm.nih.gov/27171561/"]})
-        test_link.append({"GOAL SPECIFIC":["HbA1c","https://pubmed.ncbi.nlm.nih.gov/31352032/"]})
-        test_link.append({"GOAL SPECIFIC":["Cholesterol","https://pubmed.ncbi.nlm.nih.gov/15013029/"]})
-        test_link.append({"GOAL SPECIFIC":["Homocysteine","https://pubmed.ncbi.nlm.nih.gov/32304285/"]})
+        test_link.append(
+            {"GOAL SPECIFIC": ["CBC", "https://pubmed.ncbi.nlm.nih.gov/28697416/"]}
+        )
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "Thyroid tests",
+                    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3246784/",
+                ]
+            }
+        )
+        test_link.append(
+            {"GOAL SPECIFIC": ["Anti TPO", "https://pubmed.ncbi.nlm.nih.gov/15317653/"]}
+        )
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "Macronutrients",
+                    "https://pubmed.ncbi.nlm.nih.gov/17723028/",
+                ]
+            }
+        )
+        test_link.append(
+            {"GOAL SPECIFIC": ["Lactate", "https://pubmed.ncbi.nlm.nih.gov/29726068/"]}
+        )
+        test_link.append(
+            {"GOAL SPECIFIC": ["LFT", "https://pubmed.ncbi.nlm.nih.gov/27171561/"]}
+        )
+        test_link.append(
+            {"GOAL SPECIFIC": ["HbA1c", "https://pubmed.ncbi.nlm.nih.gov/31352032/"]}
+        )
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "Cholesterol",
+                    "https://pubmed.ncbi.nlm.nih.gov/15013029/",
+                ]
+            }
+        )
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "Homocysteine",
+                    "https://pubmed.ncbi.nlm.nih.gov/32304285/",
+                ]
+            }
+        )
         pk_id = request.session.get("pk_id")
         patient = Patient.objects.get(patient_id=pk_id)
         patient.tests = list
@@ -3848,34 +4573,68 @@ def result(request):
         patient.save()
 
     # DEFAULT
-    if (patient.healthgoal == "Specific Conditions" or patient.healthgoal == "Weight" or patient.healthgoal == "Fitness" or patient.healthgoal == "Ensure Well Being"):
+    if (
+        patient.healthgoal == "Specific Conditions"
+        or patient.healthgoal == "Weight"
+        or patient.healthgoal == "Fitness"
+        or patient.healthgoal == "Ensure Well Being"
+    ):
         # AGE AND GENDER
         if patient.age < 18 and patient.gender == "Female":
             subg.append("AGE & GENDER")
             list.append(str(test[112]))
             list.append(str(test[29]))
             list.append(str(test[30]))
-            test_link.append({"AGE & GENDER":["Iron Level","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5620749/"]})
+            test_link.append(
+                {
+                    "AGE & GENDER": [
+                        "Iron Level",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5620749/",
+                    ]
+                }
+            )
         if patient.age > 18 and patient.age < 50 and patient.gender == "Female":
             subg.append("AGE & GENDER")
             list.append(str(test[112]))
             list.append(str(test[29]))
             list.append(str(test[30]))
-            test_link.append({"AGE & GENDER":["Iron Deficiency","https://pubmed.ncbi.nlm.nih.gov/29582845/"]})
+            test_link.append(
+                {
+                    "AGE & GENDER": [
+                        "Iron Deficiency",
+                        "https://pubmed.ncbi.nlm.nih.gov/29582845/",
+                    ]
+                }
+            )
         if patient.age > 50 and patient.gender == "Female":
             subg.append("AGE & GENDER")
             list.append(str(test[85]))
             list.append(str(test[86]))
             list.append(str(test[23]))
-            test_link.append({"AGE & GENDER":["Calcium and Vitamin D","https://pubmed.ncbi.nlm.nih.gov/23077993/"]})
+            test_link.append(
+                {
+                    "AGE & GENDER": [
+                        "Calcium and Vitamin D",
+                        "https://pubmed.ncbi.nlm.nih.gov/23077993/",
+                    ]
+                }
+            )
         if patient.age > 50 and patient.gender == "Male":
             subg.append("AGE & GENDER")
             list.append(str(test[23]))
             list.append(str(test[60]))
-            test_link.append({"AGE & GENDER":["HbA1c","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4525769/ "]})
-            test_link.append({"AGE & GENDER":["PSA","https://pubmed.ncbi.nlm.nih.gov/7693980/"]})
+            test_link.append(
+                {
+                    "AGE & GENDER": [
+                        "HbA1c",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4525769/ ",
+                    ]
+                }
+            )
+            test_link.append(
+                {"AGE & GENDER": ["PSA", "https://pubmed.ncbi.nlm.nih.gov/7693980/"]}
+            )
 
-            
         pk_id = request.session.get("pk_id")
         patient = Patient.objects.get(patient_id=pk_id)
         patient.tests = list
@@ -3914,11 +4673,29 @@ def result(request):
             list.append(str(test[85]))
             list.append(str(test[29]))
             list.append(str(test[39]))
-            test_link.append({"DIET":["Vitamin B12","https://pubmed.ncbi.nlm.nih.gov/24667752/"]})
-            test_link.append({"DIET":["Vitamin D","https://pubmed.ncbi.nlm.nih.gov/25098082/"]})
-            test_link.append({"DIET":["Calcium","https://www.frontiersin.org/articles/10.3389/fendo.2022.899375/full"]})
-            test_link.append({"DIET":["Iron","https://onlinelibrary.wiley.com/doi/10.1002/jsfa.6179"]})
-            
+            test_link.append(
+                {"DIET": ["Vitamin B12", "https://pubmed.ncbi.nlm.nih.gov/24667752/"]}
+            )
+            test_link.append(
+                {"DIET": ["Vitamin D", "https://pubmed.ncbi.nlm.nih.gov/25098082/"]}
+            )
+            test_link.append(
+                {
+                    "DIET": [
+                        "Calcium",
+                        "https://www.frontiersin.org/articles/10.3389/fendo.2022.899375/full",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "DIET": [
+                        "Iron",
+                        "https://onlinelibrary.wiley.com/doi/10.1002/jsfa.6179",
+                    ]
+                }
+            )
+
         elif patient.diet_answer == "nonveg":
             subg.append("DIET")
             list.append(str(test[26]))
@@ -3926,10 +4703,23 @@ def result(request):
             list.append(str(test[23]))
             list.append(str(test[43]))
             list.append(str(test[87]))
-            test_link.append({"DIET":["Lipid","https://go.gale.com/ps/i.do?id=GALE%7CA471274916&sid=googleScholar&v=2.1&it=r&linkaccess=abs&issn=22784748&p=AONE&sw=w&userGroupName=anon%7E382fe327"]})
-            test_link.append({"DIET":["Hba1c","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6153574/"]})
+            test_link.append(
+                {
+                    "DIET": [
+                        "Lipid",
+                        "https://go.gale.com/ps/i.do?id=GALE%7CA471274916&sid=googleScholar&v=2.1&it=r&linkaccess=abs&issn=22784748&p=AONE&sw=w&userGroupName=anon%7E382fe327",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "DIET": [
+                        "Hba1c",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6153574/",
+                    ]
+                }
+            )
 
-            
         elif patient.diet_answer == "Gluten Free":
             subg.append("DIET")
             list.append(str(test[26]))
@@ -3937,9 +4727,18 @@ def result(request):
             list.append(str(test[23]))
             list.append(str(test[43]))
             list.append(str(test[87]))
-            test_link.append({"DIET":["Vitamin D","https://www.mdpi.com/2218-1989/13/1/74"]})
-            test_link.append({"DIET":["Micronutrients","https://linkinghub.elsevier.com/retrieve/pii/S0261561416300887"]})
-            
+            test_link.append(
+                {"DIET": ["Vitamin D", "https://www.mdpi.com/2218-1989/13/1/74"]}
+            )
+            test_link.append(
+                {
+                    "DIET": [
+                        "Micronutrients",
+                        "https://linkinghub.elsevier.com/retrieve/pii/S0261561416300887",
+                    ]
+                }
+            )
+
         elif patient.diet_answer == "Keto":
             subg.append("DIET")
             list.append(str(test[11]))
@@ -3949,8 +4748,10 @@ def result(request):
             list.append(str(test[29]))
             list.append(str(test[85]))
             list.append(str(test[38]))
-            test_link.append({"DIET":["Vitamin D","https://pubmed.ncbi.nlm.nih.gov/36557329/"]})
-            
+            test_link.append(
+                {"DIET": ["Vitamin D", "https://pubmed.ncbi.nlm.nih.gov/36557329/"]}
+            )
+
         elif patient.diet_answer == "High Protien":
             subg.append("DIET")
             list.append(str(test[83]))
@@ -3959,7 +4760,14 @@ def result(request):
             list.append(str(test[114]))
             list.append(str(test[55]))
             list.append(str(test[23]))
-            test_link.append({"DIET":["High Protien","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4045293/"]})
+            test_link.append(
+                {
+                    "DIET": [
+                        "High Protien",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4045293/",
+                    ]
+                }
+            )
 
         # DRINKING ANSWER
         if patient.drinking_answer == "I drink everyday":
@@ -3972,11 +4780,29 @@ def result(request):
             list.append(str(test[109]))
             list.append(str(test[110]))
             list.append(str(test[111]))
-            test_link.append({"DRINKING":["LFT","https://academic.oup.com/alcalc/article/44/2/199/184610"]})
-            test_link.append({"DRINKING":["Amy,Lip..","https://pubmed.ncbi.nlm.nih.gov/28431198/"]})
-            test_link.append({"DRINKING":["Vitamin A","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3367262/"]})
-            test_link.append({"DRINKING":["Folate","https://pubmed.ncbi.nlm.nih.gov/35565159/"]})
-            
+            test_link.append(
+                {
+                    "DRINKING": [
+                        "LFT",
+                        "https://academic.oup.com/alcalc/article/44/2/199/184610",
+                    ]
+                }
+            )
+            test_link.append(
+                {"DRINKING": ["Amy,Lip..", "https://pubmed.ncbi.nlm.nih.gov/28431198/"]}
+            )
+            test_link.append(
+                {
+                    "DRINKING": [
+                        "Vitamin A",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3367262/",
+                    ]
+                }
+            )
+            test_link.append(
+                {"DRINKING": ["Folate", "https://pubmed.ncbi.nlm.nih.gov/35565159/"]}
+            )
+
         elif patient.drinking_answer == "3-6 days a week.":
             subg.append("DRINKING")
             list.append(str(test[26]))
@@ -3985,18 +4811,34 @@ def result(request):
             list.append(str(test[108]))
             list.append(str(test[109]))
             list.append(str(test[20]))
-            test_link.append({"DRINKING":["LFT","https://academic.oup.com/alcalc/article/44/2/199/184610"]})
-            test_link.append({"DRINKING":["Amy,Lip..","https://pubmed.ncbi.nlm.nih.gov/28431198/"]})
+            test_link.append(
+                {
+                    "DRINKING": [
+                        "LFT",
+                        "https://academic.oup.com/alcalc/article/44/2/199/184610",
+                    ]
+                }
+            )
+            test_link.append(
+                {"DRINKING": ["Amy,Lip..", "https://pubmed.ncbi.nlm.nih.gov/28431198/"]}
+            )
         elif patient.drinking_answer == "1-3 days a week":
-            subg.append("DRINKING")    
+            subg.append("DRINKING")
             list.append(str(test[23]))
             list.append(str(test[20]))
-            test_link.append({"DRINKING":["LFT","https://academic.oup.com/alcalc/article/44/2/199/184610"]})
-            
+            test_link.append(
+                {
+                    "DRINKING": [
+                        "LFT",
+                        "https://academic.oup.com/alcalc/article/44/2/199/184610",
+                    ]
+                }
+            )
+
         pk_id = request.session.get("pk_id")
         patient = Patient.objects.get(patient_id=pk_id)
         patient.tests = list
-        patient.testlink=test_link
+        patient.testlink = test_link
         patient.save()
 
         # WORKOUT
@@ -4006,22 +4848,48 @@ def result(request):
             list.append(str(test[26]))
             list.append(str(test[92]))
             list.append(str(test[87]))
-            test_link.append({"WORKOUT":["HS CRP","https://pubmed.ncbi.nlm.nih.gov/21602429/"]})
-            test_link.append({"WORKOUT":["Lipid","https://pubmed.ncbi.nlm.nih.gov/35355910/"]})
-            test_link.append({"WORKOUT":["Lipid profile","https://pubmed.ncbi.nlm.nih.gov/26256803/"]})
-            test_link.append({"WORKOUT":["HbA1c","https://pubmed.ncbi.nlm.nih.gov/31756287/"]})
-            
+            test_link.append(
+                {"WORKOUT": ["HS CRP", "https://pubmed.ncbi.nlm.nih.gov/21602429/"]}
+            )
+            test_link.append(
+                {"WORKOUT": ["Lipid", "https://pubmed.ncbi.nlm.nih.gov/35355910/"]}
+            )
+            test_link.append(
+                {
+                    "WORKOUT": [
+                        "Lipid profile",
+                        "https://pubmed.ncbi.nlm.nih.gov/26256803/",
+                    ]
+                }
+            )
+            test_link.append(
+                {"WORKOUT": ["HbA1c", "https://pubmed.ncbi.nlm.nih.gov/31756287/"]}
+            )
+
         elif patient.workout_answer == "1 hour of more, less than 2 days a week":
             subg.append("WORKOUT")
             list.append(str(test[23]))
             list.append(str(test[26]))
             list.append(str(test[92]))
             list.append(str(test[87]))
-            test_link.append({"WORKOUT":["HS CRP","https://pubmed.ncbi.nlm.nih.gov/21602429/"]})
-            test_link.append({"WORKOUT":["Lipid","https://pubmed.ncbi.nlm.nih.gov/35355910/"]})
-            test_link.append({"WORKOUT":["Lipid profile","https://pubmed.ncbi.nlm.nih.gov/26256803/"]})
-            test_link.append({"WORKOUT":["HbA1c","https://pubmed.ncbi.nlm.nih.gov/31756287/"]})
-            
+            test_link.append(
+                {"WORKOUT": ["HS CRP", "https://pubmed.ncbi.nlm.nih.gov/21602429/"]}
+            )
+            test_link.append(
+                {"WORKOUT": ["Lipid", "https://pubmed.ncbi.nlm.nih.gov/35355910/"]}
+            )
+            test_link.append(
+                {
+                    "WORKOUT": [
+                        "Lipid profile",
+                        "https://pubmed.ncbi.nlm.nih.gov/26256803/",
+                    ]
+                }
+            )
+            test_link.append(
+                {"WORKOUT": ["HbA1c", "https://pubmed.ncbi.nlm.nih.gov/31756287/"]}
+            )
+
         elif (
             patient.workout_answer == "1 hour of more daily"
             or patient.workout_answer == "1 hour of more, 3 days a week"
@@ -4030,10 +4898,26 @@ def result(request):
             list.append(str(test[83]))
             list.append(str(test[11]))
             list.append(str(test[85]))
-            test_link.append({"WORKOUT":["Vitamin D","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7071499/"]})
-            test_link.append({"WORKOUT":["KFT","https://pubmed.ncbi.nlm.nih.gov/6567229/"]})
-            test_link.append({"WORKOUT":["Calcium","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4535115/"]})
-            
+            test_link.append(
+                {
+                    "WORKOUT": [
+                        "Vitamin D",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7071499/",
+                    ]
+                }
+            )
+            test_link.append(
+                {"WORKOUT": ["KFT", "https://pubmed.ncbi.nlm.nih.gov/6567229/"]}
+            )
+            test_link.append(
+                {
+                    "WORKOUT": [
+                        "Calcium",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4535115/",
+                    ]
+                }
+            )
+
         pk_id = request.session.get("pk_id")
         patient = Patient.objects.get(patient_id=pk_id)
         patient.tests = list
@@ -4042,20 +4926,51 @@ def result(request):
     patient = Patient.objects.get(patient_id=pk_id)
     patient.tests = list
     patient.save()
-    
-    
 
     # GUT IMPROVEMENT
-    if ( patient.question1 == "Which of the following symptoms best describe your problem?" ):
+    if (
+        patient.question1
+        == "Which of the following symptoms best describe your problem?"
+    ):
         if patient.answer1 == "Gastritis/ Acidity/ GERD":
             list.append(str(test[80]))
             list.append(str(test[115]))
             list.append(str(test[128]))
-            test_link.append({"GOAL SPECIFIC":["FIT","https://pub med.ncbi.nlm.nih.gov/28884564/"]})
-            test_link.append({"GOAL SPECIFIC":["Dyspepsia","https://pubmed.ncbi.nlm.nih.gov/22327302/"]})
-            test_link.append({"GOAL SPECIFIC":["Fecal Fat","https://pubmed.ncbi.nlm.nih.gov/35368458/"]})
-            test_link.append({"GOAL SPECIFIC":["Multiple","https://pubmed.ncbi.nlm.nih.gov/28095460/"]})
-            test_link.append({"GOAL SPECIFIC":["Stool Analysis","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2780157/"]})
+            test_link.append(
+                {"GOAL SPECIFIC": ["FIT", "https://pub med.ncbi.nlm.nih.gov/28884564/"]}
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Dyspepsia",
+                        "https://pubmed.ncbi.nlm.nih.gov/22327302/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Fecal Fat",
+                        "https://pubmed.ncbi.nlm.nih.gov/35368458/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Multiple",
+                        "https://pubmed.ncbi.nlm.nih.gov/28095460/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Stool Analysis",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2780157/",
+                    ]
+                }
+            )
 
         elif patient.answer1 == "Constipation":
             list.append(str(test[80]))
@@ -4065,8 +4980,15 @@ def result(request):
             list.append(str(test[39]))
             list.append(str(test[115]))
             list.append(str(test[128]))
-            test_link.append({"GOAL SPECIFIC":["Magnesium","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8645769/"]})
-            
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Magnesium",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8645769/",
+                    ]
+                }
+            )
+
         elif patient.answer1 == "Diarrhoea less than 1week":
             list.append(str(test[4]))
             list.append(str(test[8]))
@@ -4079,7 +5001,14 @@ def result(request):
             list.append(str(test[119]))
             list.append(str(test[120]))
             list.append(str(test[128]))
-            test_link.append({"GOAL SPECIFIC":["Diarrhea","https://www.ncbi.nlm.nih.gov/books/NBK448082/"]})
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Diarrhea",
+                        "https://www.ncbi.nlm.nih.gov/books/NBK448082/",
+                    ]
+                }
+            )
 
         elif patient.answer1 == "Diarrhoea more than 1 week":
             list.append(str(test[4]))
@@ -4097,7 +5026,14 @@ def result(request):
             list.append(str(test[29]))
             list.append(str(test[30]))
             list.append(str(test[128]))
-            test_link.append({"GOAL SPECIFIC":["Diarrhea","https://www.ncbi.nlm.nih.gov/books/NBK448082/"]})
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Diarrhea",
+                        "https://www.ncbi.nlm.nih.gov/books/NBK448082/",
+                    ]
+                }
+            )
 
             if patient.age > 50:
                 list.append(str(test[121]))
@@ -4111,19 +5047,58 @@ def result(request):
             list.append(str(test[8]))
             list.append(str(test[7]))
             list.append(str(test[115]))
-            test_link.append({"GOAL SPECIFIC":["IBD","https://pubmed.ncbi.nlm.nih.gov/11474909/"]})
-            test_link.append({"ANTI TTG":["IBD","https://www.sciencedirect.com/science/article/pii/S2237936319301017#:~:text=The%20prevalence%20of%20anti%20tTG%20antibodies%20among%20patients%20with%20IBS,CD%20in%20IBS%20patients%20histologically."]})
-            test_link.append({"GOAL SPECIFIC":["EMGL","https://pubmed.ncbi.nlm.nih.gov/23885406/"]})
+            test_link.append(
+                {"GOAL SPECIFIC": ["IBD", "https://pubmed.ncbi.nlm.nih.gov/11474909/"]}
+            )
+            test_link.append(
+                {
+                    "ANTI TTG": [
+                        "IBD",
+                        "https://www.sciencedirect.com/science/article/pii/S2237936319301017#:~:text=The%20prevalence%20of%20anti%20tTG%20antibodies%20among%20patients%20with%20IBS,CD%20in%20IBS%20patients%20histologically.",
+                    ]
+                }
+            )
+            test_link.append(
+                {"GOAL SPECIFIC": ["EMGL", "https://pubmed.ncbi.nlm.nih.gov/23885406/"]}
+            )
 
         elif patient.answer1 == "Nausea/ vomiting":
             list.append(str(test[115]))
             list.append(str(test[109]))
             list.append(str(test[20]))
             list.append(str(test[108]))
-            test_link.append({"GOAL SPECIFIC":["FIT","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8152468/"]})
-            test_link.append({"GOAL SPECIFIC":["LFT","https://www.ncbi.nlm.nih.gov/books/NBK482489/"]})
-            test_link.append({"GOAL SPECIFIC":["Amylase","https://www.ncbi.nlm.nih.gov/books/NBK557738/"]})
-            test_link.append({"GOAL SPECIFIC":["Lipase","https://www.ncbi.nlm.nih.gov/books/NBK537346/"]})
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "FIT",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8152468/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "LFT",
+                        "https://www.ncbi.nlm.nih.gov/books/NBK482489/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Amylase",
+                        "https://www.ncbi.nlm.nih.gov/books/NBK557738/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Lipase",
+                        "https://www.ncbi.nlm.nih.gov/books/NBK537346/",
+                    ]
+                }
+            )
 
         elif patient.answer1 == "Bloating/ Flatulance / Gas":
             list.append(str(test[115]))
@@ -4156,7 +5131,7 @@ def result(request):
         patient = Patient.objects.get(patient_id=pk_id)
         patient.tests = list
         patient.save()
-        
+
     if patient.question2 == "Please choose any of the following FIT profiles":
         if patient.answer2 == "Profile 1":
             list.append(str(test[132]))
@@ -4172,9 +5147,6 @@ def result(request):
         patient = Patient.objects.get(patient_id=pk_id)
         patient.tests = list
         patient.save()
-    
-
-        
 
     # WEIGHT & FTINESS
     if patient.question2 == "How would you describe your energy levels?":
@@ -4184,71 +5156,154 @@ def result(request):
             list.append(str(test[101]))
             list.append(str(test[21]))
             list.append(str(test[23]))
-            test_link.append({"FITNESS":["Fatigue","https://www.cmaj.ca/content/174/6/765 "]})
-            
+            test_link.append(
+                {"FITNESS": ["Fatigue", "https://www.cmaj.ca/content/174/6/765 "]}
+            )
+
             pk_id = request.session.get("pk_id")
             patient = Patient.objects.get(patient_id=pk_id)
             patient.tests = list
             patient.save()
 
-    
     if patient.question1 == "What is your main concern?":
         if patient.answer1 == "I want to reduce my weight":
             subg.append("WEIGHT")
             list.append(str(test[77]))
             list.append(str(test[53]))
             list.append(str(test[21]))
-            test_link.append({"WEIGHT":["Leptin","https://pubmed.ncbi.nlm.nih.gov/21460597/"]})
-            test_link.append({"WEIGHT":["Cortisol","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4570173/"]})
-            test_link.append({"WEIGHT":["Thyroid","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3821486/"]})
-            
+            test_link.append(
+                {"WEIGHT": ["Leptin", "https://pubmed.ncbi.nlm.nih.gov/21460597/"]}
+            )
+            test_link.append(
+                {
+                    "WEIGHT": [
+                        "Cortisol",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4570173/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "WEIGHT": [
+                        "Thyroid",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3821486/",
+                    ]
+                }
+            )
+
         elif patient.answer1 == "I want to increase my weight":
             subg.append("WEIGHT")
             list.append(str(test[127]))
             list.append(str(test[77]))
-            test_link.append({"WEIGHT":["Leptin","https://pubmed.ncbi.nlm.nih.gov/21460597/"]})
-            test_link.append({"WEIGHT":["CBC","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3237273/"]})
-            
+            test_link.append(
+                {"WEIGHT": ["Leptin", "https://pubmed.ncbi.nlm.nih.gov/21460597/"]}
+            )
+            test_link.append(
+                {
+                    "WEIGHT": [
+                        "CBC",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3237273/",
+                    ]
+                }
+            )
+
         pk_id = request.session.get("pk_id")
         patient = Patient.objects.get(patient_id=pk_id)
         patient.tests = list
 
-    if patient.question2 == "Do you or a blood relation suffer from any of the following?":
+    if (
+        patient.question2
+        == "Do you or a blood relation suffer from any of the following?"
+    ):
         subg.append("BLOOD RELATION")
-    
+
         if "Diabetes" in patient.answer2:
-          
             list.append(str(test[23]))
-            test_link.append({"GOAL SPECIFIC":["Diabetes","https://pubmed.ncbi.nlm.nih.gov/27398023/"]})
-            
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Diabetes",
+                        "https://pubmed.ncbi.nlm.nih.gov/27398023/",
+                    ]
+                }
+            )
+
         if "Hypertension" in patient.answer2:
-           
             list.append(str(test[26]))
-            test_link.append({"GOAL SPECIFIC":["Hyperten..","https://pubmed.ncbi.nlm.nih.gov/17344784/"]})
-            
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Hyperten..",
+                        "https://pubmed.ncbi.nlm.nih.gov/17344784/",
+                    ]
+                }
+            )
+
         if "Heart Disease" in patient.answer2:
-         
             list.append(str(test[82]))
             list.append(str(test[87]))
             list.append(str(test[92]))
             list.append(str(test[97]))
-            test_link.append({"GOAL SPECIFIC":["Lipid profile","https://pubmed.ncbi.nlm.nih.gov/29045483/"]})
-            test_link.append({"GOAL SPECIFIC":["Pro BNP","https://pubmed.ncbi.nlm.nih.gov/23470072//"]})
-            test_link.append({"GOAL SPECIFIC":["LipoA","https://pubmed.ncbi.nlm.nih.gov/33236085/"]})
-            test_link.append({"GOAL SPECIFIC":["HS CRP","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4669860/"]})
-            
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Lipid profile",
+                        "https://pubmed.ncbi.nlm.nih.gov/29045483/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Pro BNP",
+                        "https://pubmed.ncbi.nlm.nih.gov/23470072//",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "LipoA",
+                        "https://pubmed.ncbi.nlm.nih.gov/33236085/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "HS CRP",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4669860/",
+                    ]
+                }
+            )
+
         if "High Cholesterol" in patient.answer2:
-           
             list.append(str(test[82]))
             list.append(str(test[92]))
-            test_link.append({"GOAL SPECIFIC":["Cholesterol","https://www.ncbi.nlm.nih.gov/books/NBK542294/"]})
-            test_link.append({"GOAL SPECIFIC":["Lipo","https://pubmed.ncbi.nlm.nih.gov/34196811/"]})
-            
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Cholesterol",
+                        "https://www.ncbi.nlm.nih.gov/books/NBK542294/",
+                    ]
+                }
+            )
+            test_link.append(
+                {"GOAL SPECIFIC": ["Lipo", "https://pubmed.ncbi.nlm.nih.gov/34196811/"]}
+            )
+
         if "Kidney Disease" in patient.answer2:
             list.append(str(test[83]))
             list.append(str(test[28]))
-            test_link.append({"GOAL SPECIFIC":["KFT","https://www.ncbi.nlm.nih.gov/books/NBK507821/"]})
-            
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "KFT",
+                        "https://www.ncbi.nlm.nih.gov/books/NBK507821/",
+                    ]
+                }
+            )
+
         if "Asthma" in patient.answer2:
             list.append(str(test[99]))
 
@@ -4259,74 +5314,133 @@ def result(request):
         pk_id = request.session.get("pk_id")
         patient = Patient.objects.get(patient_id=pk_id)
         patient.tests = list
-        
-    #HISTORY    
-    if patient.history_question == "Do you or a blood relation have any of the following conditions/complaints?":
+
+    # HISTORY
+    if (
+        patient.history_question
+        == "Do you or a blood relation have any of the following conditions/complaints?"
+    ):
         subg.append("BLOOD RELATION")
-    
+
         if "Diabetes" in patient.history_answer:
-          
             list.append(str(test[23]))
-            test_link.append({"GOAL SPECIFIC":["Diabetes","https://pubmed.ncbi.nlm.nih.gov/27398023/"]})
-            
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Diabetes",
+                        "https://pubmed.ncbi.nlm.nih.gov/27398023/",
+                    ]
+                }
+            )
+
         if "Hypertension" in patient.history_answer:
-           
             list.append(str(test[26]))
-            test_link.append({"GOAL SPECIFIC":["Hypertension","https://pubmed.ncbi.nlm.nih.gov/17344784/"]})
-            
-        if "Hypertension" in patient.history_answer and  "Diabetes" in patient.history_answer:
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Hypertension",
+                        "https://pubmed.ncbi.nlm.nih.gov/17344784/",
+                    ]
+                }
+            )
+
+        if (
+            "Hypertension" in patient.history_answer
+            and "Diabetes" in patient.history_answer
+        ):
             list.append(str(test[15]))
-            
-        
-            
+
         if "Heart Disease" in patient.history_answer:
-         
             list.append(str(test[82]))
             list.append(str(test[87]))
             list.append(str(test[92]))
             list.append(str(test[97]))
-            test_link.append({"GOAL SPECIFIC":["Lipid profile","https://pubmed.ncbi.nlm.nih.gov/29045483/"]})
-            test_link.append({"GOAL SPECIFIC":["Pro BNP","https://pubmed.ncbi.nlm.nih.gov/23470072//"]})
-            test_link.append({"GOAL SPECIFIC":["LipoA","https://pubmed.ncbi.nlm.nih.gov/33236085/"]})
-            test_link.append({"GOAL SPECIFIC":["HS CRP","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4669860/"]})
-            
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Lipid profile",
+                        "https://pubmed.ncbi.nlm.nih.gov/29045483/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Pro BNP",
+                        "https://pubmed.ncbi.nlm.nih.gov/23470072//",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "LipoA",
+                        "https://pubmed.ncbi.nlm.nih.gov/33236085/",
+                    ]
+                }
+            )
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "HS CRP",
+                        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4669860/",
+                    ]
+                }
+            )
+
         if "High Cholesterol" in patient.history_answer:
-           
             list.append(str(test[82]))
             list.append(str(test[92]))
-            test_link.append({"GOAL SPECIFIC":["Cholesterol","https://www.ncbi.nlm.nih.gov/books/NBK542294/"]})
-            test_link.append({"GOAL SPECIFIC":["Lipo","https://pubmed.ncbi.nlm.nih.gov/34196811/"]})
-            
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "Cholesterol",
+                        "https://www.ncbi.nlm.nih.gov/books/NBK542294/",
+                    ]
+                }
+            )
+            test_link.append(
+                {"GOAL SPECIFIC": ["Lipo", "https://pubmed.ncbi.nlm.nih.gov/34196811/"]}
+            )
+
         if "Kidney Disease" in patient.history_answer:
             list.append(str(test[83]))
             list.append(str(test[28]))
-            test_link.append({"GOAL SPECIFIC":["KFT","https://www.ncbi.nlm.nih.gov/books/NBK507821/"]})
-            
+            test_link.append(
+                {
+                    "GOAL SPECIFIC": [
+                        "KFT",
+                        "https://www.ncbi.nlm.nih.gov/books/NBK507821/",
+                    ]
+                }
+            )
+
         if "Asthma" in patient.answer2:
             list.append(str(test[99]))
 
         if "Bleeding Disorders" in patient.history_answer:
             list.append(str(test[72]))
             list.append(str(test[100]))
-            
+
         if "Bone Pain" in patient.history_answer:
             list.append(str(test[5]))
-            
+
         if "PCOS" in patient.history_answer:
             list.append(str(test[0]))
-            
+
         if "Anemia" in patient.history_answer:
             list.append(str(test[2]))
 
         pk_id = request.session.get("pk_id")
         patient = Patient.objects.get(patient_id=pk_id)
         patient.tests = list
-        
-    
 
     # ENSURE WELL BEING
 
-    if ( patient.specificquestion1 == "Do you have any of the following sleep related issues?" ):
+    if (
+        patient.specificquestion1
+        == "Do you have any of the following sleep related issues?"
+    ):
         if patient.specificanswer1 == "Snoring":
             list.append(str(test[26]))
 
@@ -4375,7 +5489,7 @@ def result(request):
     pk_id = request.session.get("pk_id")
     patient = Patient.objects.get(patient_id=pk_id)
     list2 = set(list)
-    list3=[]
+    list3 = []
     # CALCULATING PRICE LIST
     final_price = []
     for i in set(list2):
@@ -4487,7 +5601,7 @@ def result(request):
         list2.discard("Lipid Profile")
         list2.discard("Homocystine")
         list2.discard("Lipoprotien (a)")
-        
+
     if patient.question2 == "Please choose any of the following FIT profiles":
         if "FIT" in list2:
             list2.discard("FIT")
@@ -4500,90 +5614,125 @@ def result(request):
 
     if "Thyroid Profile" in list2:
         list2.discard("TSH")
-        
+
     if "Irregular Periods" in patient.answer1:
-        test_link.append({"GOAL SPECIFIC":["PROFILE","https://www.ncbi.nlm.nih.gov/books/NBK560575/"]})
-        
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "PROFILE",
+                    "https://www.ncbi.nlm.nih.gov/books/NBK560575/",
+                ]
+            }
+        )
+
     if "Acne" in patient.answer1:
-        test_link.append({"GOAL SPECIFIC":["PROFILE","https://www.ncbi.nlm.nih.gov/books/NBK459173/"]})
-        
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "PROFILE",
+                    "https://www.ncbi.nlm.nih.gov/books/NBK459173/",
+                ]
+            }
+        )
+
     if "Extra hair growth on your face or body (hirsuitism)" in patient.answer1:
-        test_link.append({"GOAL SPECIFIC":["PROFILE","https://www.ncbi.nlm.nih.gov/books/NBK470417/"]})
-        
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "PROFILE",
+                    "https://www.ncbi.nlm.nih.gov/books/NBK470417/",
+                ]
+            }
+        )
+
     if "skin darkening (neck, groin, under the breasts)" in patient.answer1:
-        test_link.append({"GOAL SPECIFIC":["PROFILE","https://www.ncbi.nlm.nih.gov/books/NBK431057/"]})
-        
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "PROFILE",
+                    "https://www.ncbi.nlm.nih.gov/books/NBK431057/",
+                ]
+            }
+        )
+
     if patient.subgoal == "Anemia":
-        test_link.append({"GOAL SPECIFIC":["Anemia screening","https://www.ncbi.nlm.nih.gov/books/NBK499905/"]})
-        test_link.append({"GOAL SPECIFIC":["Diag workups","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7429725/"]})
-    
-         
-    
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "Anemia screening",
+                    "https://www.ncbi.nlm.nih.gov/books/NBK499905/",
+                ]
+            }
+        )
+        test_link.append(
+            {
+                "GOAL SPECIFIC": [
+                    "Diag workups",
+                    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7429725/",
+                ]
+            }
+        )
+
     for i in set(list2):
         test_obj_name = Test.objects.get(test=i)
         list3.append(test_obj_name)
-        
-    keys_list=[]
-    values_list=[]
-    for j in test_link: 
+
+    keys_list = []
+    values_list = []
+    for j in test_link:
         for k in j:
             keys_list.append(k)
             values_list.append(j.get(k))
-    print(keys_list)
-    print(values_list)
-    
-    
+
+
+    encoder_of_url(patient.number,list3,"Next Date")        
+    print("keys_list",keys_list)
+    print("values_list",values_list)
+
     if "answer1" in request.POST:
         answer1 = request.POST["answer1"]
         pk_id = request.session.get("pk_id")
         patient = Patient.objects.get(patient_id=pk_id)
         patient.buttons_clear = answer1
         patient.save()
-        
-        
+
     if "answer2" in request.POST:
         answer2 = request.POST["answer2"]
         pk_id = request.session.get("pk_id")
         patient = Patient.objects.get(patient_id=pk_id)
         patient.healthgoal_clear = answer2
         patient.save()
-        
-        
+
     if "answer3" in request.POST:
         answer3 = request.POST["answer3"]
         pk_id = request.session.get("pk_id")
         patient = Patient.objects.get(patient_id=pk_id)
         patient.tests_clear = answer3
         patient.save()
-       
-        
+
     if "answer4" in request.POST:
         answer4 = request.POST["answer4"]
         pk_id = request.session.get("pk_id")
         patient = Patient.objects.get(patient_id=pk_id)
         patient.questions_clear = answer4
         patient.save()
-       
-        
+
     if "answer5" in request.POST:
         answer5 = request.POST["answer5"]
         pk_id = request.session.get("pk_id")
         patient = Patient.objects.get(patient_id=pk_id)
         patient.rating = answer5
         patient.save()
-        
+
     if "comments" in request.POST:
         comments = request.POST["comments"]
         pk_id = request.session.get("pk_id")
         patient = Patient.objects.get(patient_id=pk_id)
         patient.comments = comments
         patient.save()
-        
+
     if "submit" in request.POST:
-        return redirect('home')
-        
-       
- 
+        return redirect("home")
 
     return render(
         request,
@@ -4599,9 +5748,9 @@ def result(request):
             "price": final_price,
             "dprice": int(dprice),
             "sumf": sumf,
-            'key':keys_list,
-            'value':values_list,
-            'subg':subg
+            "key": keys_list,
+            "value": values_list,
+            "subg": subg,
         },
     )
 
@@ -4657,4 +5806,3 @@ def contactus(request):
         contactus.save()
 
     return render(request, "home.html")
-

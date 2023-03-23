@@ -117,7 +117,7 @@ body {
 }
 
 #speedometer .barometer {
-  background-image: url("https://svgshare.com/i/GAZ.svg");
+  background-image: url("{% static 'speedometer.svg' %}");
   background-repeat: no-repeat;
   width: 200px;
   height: 110px;
@@ -125,7 +125,7 @@ body {
 }
 
 #speedometer .needle {
-  background-image: url("https://svgshare.com/i/GBP.svg");
+  background-image: url("{% static 'needle.svg' %}");
   background-repeat: no-repeat;
   z-index: 999999;
   width: 200px;
@@ -294,7 +294,7 @@ top : -30px !important;
           
           <div id="input-options">
             <label for="input-label"></label>
-            <input type="number"  class="form-control" placeholder= "Enter your height in cm" step="0.01" name="height" id="input-label">
+            <input type="number"  class="form-control" placeholder= "Enter your height in cm" step="0.01" name="height" id="input-label" required>
           </div>
            <!-- height end -->
  
@@ -311,7 +311,7 @@ top : -30px !important;
                 
                 <div id="input-options">
                   <label for="input-label"></label>
-                  <input type="number"  class="form-control" placeholder= "Enter your weight in kgs" step="0.1" name="weight" id="input-label">
+                  <input type="number"  class="form-control" placeholder= "Enter your weight in kgs" step="0.1" name="weight" id="input-label"required>
                 </div>
                  <!-- weight end -->
           

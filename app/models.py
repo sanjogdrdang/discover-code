@@ -74,7 +74,7 @@ class Patient(models.Model):
     questions_clear=models.CharField(max_length=100,default="none")
     rating=models.CharField(max_length=100,default="none")
     comments=models.CharField(max_length=1000,default="none")
-    contacted=models.CharField(max_length=50,default="none")
+    contacted=models.BooleanField(default=False)
 
     def __str__(self):
         return self.name

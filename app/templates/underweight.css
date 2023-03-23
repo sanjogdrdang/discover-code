@@ -1,3 +1,4 @@
+ {% load static %}
 <style>
 #speedometer {
     display: inline-block;
@@ -5,7 +6,7 @@
   }
   
   #speedometer .barometer {
-    background-image: url("https://svgshare.com/i/GAZ.svg");
+    background-image: url("{% static 'speedometer.svg' %}");
     background-repeat: no-repeat;
     width: 200px;
     height: 110px;
@@ -13,7 +14,7 @@
   }
   
   #speedometer .needle {
-    background-image: url("https://svgshare.com/i/GBP.svg");
+    background-image: url("{% static 'needle.svg' %}");
     background-repeat: no-repeat;
     
     width: 200px;

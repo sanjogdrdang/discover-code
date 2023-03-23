@@ -176,11 +176,11 @@ top:-60px !important;
     {% if patient_healthgoal == "Specific Conditions" %}
     <img src="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/SpecificConditions.png" id="img1" width=500 height=550 class="d-block w-100" alt="...">
     
-    {% elif patient_healthgoal == "Allergy and Intolerance" %}
-          <img src="{% static 'personaldetails1.png' %}" id="img1" style="position: sticky;" width=500 height=400 class="d-block w-100" alt="...">
-    {% elif patient_healthgoal == "Augment Quality of Sleep and Elevate Mood" %}
-          <img src="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/sleep_mood.png" id="img1" width=500 height=550 class="d-block w-100" alt="...">
-    
+      {% elif patient_healthgoal == "Allergy and Intolerance" %}
+          <img src="{% static 'allergy.png' %}" id="img1" style="position: sticky;" width=500 height=450 class="d-block w-100" alt="...">
+
+          {% elif patient_healthgoal == "Augment Quality of Sleep and Elevate Mood" %}
+          <img src="{% static 'sleep_mood.png' %}" id="img1" width=500 height=550 class="d-block w-100" alt="...">
     {% else %}
 
     <img src="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/ciga.png" id="img1" width=500 height=450 class="d-block w-100" alt="...">

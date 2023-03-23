@@ -522,25 +522,29 @@ height:110px !important;
           <img src="{% static 'Overall_Well_Being.png' %}" id="img1" width=500 height=550 class="d-block w-100" alt="...">
 
           {% elif patient_healthgoal == "Allergy and Intolerance" %}
-          <img src="{% static 'personaldetails1.png' %}" id="img1" style="position: sticky;" width=500 height=450 class="d-block w-100" alt="...">
+          <img src="{% static 'allergy.png' %}" id="img1" style="position: sticky;" width=500 height=450 class="d-block w-100" alt="...">
  
           {% elif patient_healthgoal == "Weight" %}
-          <img src="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/weight.png" id="img1" width=500 height=550 class="d-block w-100" alt="...">
+          <img src="{% static 'weight.png' %}" id="img1" width=500 height=550 class="d-block w-100" alt="...">
           
           {% elif patient_healthgoal == "Fitness" %}
           <img src="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/weight.png" id="img1" width=500 height=550 class="d-block w-100" alt="...">
           
           {% elif patient_healthgoal == "Gut Improvement" %}
-          <img src="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/gutimprovement.png" id="img1" width=500 height=550 class="d-block w-100" alt="...">
+          <img src="{% static 'gutimprovement.png' %}" id="img1" width=500 height=550 class="d-block w-100" alt="...">
 
           {% elif patient_healthgoal == "Skin and Hair" %}
           <img src="{% static 'Skin and Hair.png' %}" id="img1" width=500 height=550 class="d-block w-100" alt="...">
 
-          {% elif patient_healthgoal == "Augment Quality of Sleep and Elevate Mood" %}
-          <img src="https://raw.githubusercontent.com/sanjogdrdang/SAMPLE/main/sleep_mood.png" id="img1" width=500 height=550 class="d-block w-100" alt="...">
+ 
 
           {% elif patient_healthgoal == "Sexual Well Being" %}
           <img src="{% static 'Sexual Well Being.png' %}" id="img1" width=500 height=550 class="d-block w-100" alt="...">
+          
+
+          {% elif patient_healthgoal == "Augment Quality of Sleep and Elevate Mood" %}
+          <img src="{% static 'sleep_mood.png' %}" id="img1" width=500 height=550 class="d-block w-100" alt="...">
+          
           
           {% elif patient_subgoal == "Respiratory" %}
           <img src="{% static 'Skin and Hair.png' %}" id="img1" width=500 height=550 class="d-block w-100" alt="...">
