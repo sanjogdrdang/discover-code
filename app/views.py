@@ -3751,26 +3751,15 @@ def result(request):
         patient.save()
 
     # SEXUAL FEMALE
-    if (
-        patient.specificquestion2
-        == "When was the last time you got your PAP smear done"
-    ):
-        if (
-            patient.specificanswer2 == "Never"
-            or patient.specificanswer2 == "More than 3 years back"
-        ):
+    if (patient.specificquestion2 == "When was the last time you got your PAP smear done"):
+        if (patient.specificanswer2 == "Never" or patient.specificanswer2 == "More than 3 years back"):
             if patient.age >= 21 and patient.age <= 65:
                 list.append(str(test[69]))
                 pk_id = request.session.get("pk_id")
                 patient = Patient.objects.get(patient_id=pk_id)
                 patient.tests = list
                 patient.save()
-    if patient.historyfemale_answer == "I have menstrual cramps during periods":
-        list.append(str(test[65]))
-        pk_id = request.session.get("pk_id")
-        patient = Patient.objects.get(patient_id=pk_id)
-        patient.tests = list
-        patient.save()
+
     if patient.historyfemale_answer == "I experience heavy bleeding":
         list.append(str(test[69]))
         list.append(str(test[31]))
