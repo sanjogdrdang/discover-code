@@ -153,6 +153,7 @@ font-weight:bold;
         <!--Left grid-->
         <div class="card text-center">
           <div class="card-body">
+
             <div class="">
               <h5>Dear {{patient_name}}, <br>Here's yours Personalized Health Package</h5>
               <button type="button" class="btn btn-dark ">{{x}} Tests included </button>
@@ -464,6 +465,14 @@ font-weight:bold;
 
 
   </script>
+  
+<script type="module" src="https://cdn.skypack.dev/canvas-confetti" defer></script>
+<script type="module">
+  setTimeout(() => {
+    confetti();
+  }, 7000);
+</script>
+
 </body>
 </html>
 
